@@ -34,8 +34,10 @@ public class UserService {
 
     public Long getUserIdByToken(String token) {
         UserToken userToken = userTokenService.getUserTokenByToken(token);
+        if (userToken!=null){
         User user = userRepository.findByUserTokenId(userToken.getUserTokenId());
 
-        return user.getUserId();
+        return user.getUserId();}
+        else {return null;}
     }
 }

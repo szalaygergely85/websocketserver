@@ -4,7 +4,15 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gege.ideas.websocketserver.conversation.entity.ConversationParticipant;
 import com.gege.ideas.websocketserver.conversation.service.ConversationParticipantsService;
-import com.gege.ideas.websocketserver.message.MessageTypeConstants;
+import com.gege.ideas.websocketserver.message.constans.MessageConstans;
+import com.gege.ideas.websocketserver.message.entity.Message;
+import com.gege.ideas.websocketserver.message.entity.MessageToSend;
+import com.gege.ideas.websocketserver.message.service.MessageService;
+import com.gege.ideas.websocketserver.message.service.MessageToSendService;
+import com.gege.ideas.websocketserver.websocket.actions.ConnectionAction;
+import com.gege.ideas.websocketserver.websocket.actions.MessageAction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
@@ -17,48 +25,88 @@ import java.util.List;
 @Component
 public class MyWebSocketHandler extends TextWebSocketHandler {
 
+  private static final Logger logger = LoggerFactory.getLogger(MyWebSocketHandler.class);
     private final SessionRegistry sessionRegistry = new SessionRegistry();
 
   @Autowired
   private ConversationParticipantsService conversationParticipantsService;
 
+@Autowired
+private MessageService messageService;
 
+  @Autowired
+private MessageToSendService messageToSendService;
 
+  @Autowired
+private ConnectionAction connectionAction;
 
+  @Autowired
+  private MessageAction messageAction;
+
+  private String uuid;
+  private String userIdString;
 
   @Override
   public void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-    System.out.println(message.toString());
+
     String payload = message.getPayload();
+    System.out.println(payload);
     ObjectMapper objectMapper = new ObjectMapper();
     JsonNode jsonNode = objectMapper.readTree(payload);
 
     int type = jsonNode.get("type").asInt();
 
     switch (type) {
-      case MessageTypeConstants.PING:
+      case MessageConstans.ARRIVAL_CONFIRMATION:
+        uuid = jsonNode.has("uuid") ? jsonNode.get("uuid").asText() : null;
+        userIdString = jsonNode.has("userId") ? jsonNode.get("userId").asText() : null;
+        Long userId = Long.parseLong(userIdString);
+        logger.info("Message from(userId): " + userIdString + ", uuid: " + uuid);
+        Message messageEntity = messageService.getMessageByUuid(uuid);
+        messageToSendService.markMessageAsDelivered(messageEntity.getMessageId(), userId);
+        break;
+
+      case MessageConstans.PING:
         String pongMessage = "{\"type\": \"pong\"}";
         session.sendMessage(new TextMessage(pongMessage));
         System.out.println("Ping received, responding with pong");
         break;
 
-      case MessageTypeConstants.MESSAGE:
-        System.out.println("message received" + jsonNode.toString());
-        String senderId = jsonNode.has("senderId") ? jsonNode.get("senderId").asText() : null;
-        Long conversationId = jsonNode.has("conversationId") ? jsonNode.get("conversationId").asLong() : null;
-        String uuid = jsonNode.has("uuid") ? jsonNode.get("uuid").asText() : null;
-        String timestamp = jsonNode.has("timestamp") ? jsonNode.get("timestamp").asText() : null;
-        String content = jsonNode.has("content") ? jsonNode.get("content").asText() : null;
+      case MessageConstans.MESSAGE:
+
+        userIdString = jsonNode.has("senderId") ? jsonNode.get("senderId").asText() : null;
+        String conversation = jsonNode.has("conversationId") ? jsonNode.get("conversationId").asText() : null;
+        uuid = jsonNode.has("uuid") ? jsonNode.get("uuid").asText() : null;
+        String timestampString = jsonNode.has("timestamp") ? jsonNode.get("timestamp").asText() : null;
+        String contentEncrypted = jsonNode.has("contentEncrypted") ? jsonNode.get("contentEncrypted").asText() : null;
+
+        logger.info("Message from(userId): " + userIdString +" Conversation: " + conversation + ", uuid: " + uuid);
+
+
+        Long conversationId = Long.parseLong(conversation);
+        Long senderId = Long.parseLong(userIdString);
+        Long timestamp = Long.parseLong(timestampString);
+
+        Message messageLocal = messageService.createMessage(new Message(conversationId, senderId, timestamp, contentEncrypted, MessageConstans.MESSAGE, uuid));
+
+
+
 
         List<ConversationParticipant> conversationParticipants = conversationParticipantsService.getParticipantsByConversationId(conversationId);
 
         for (ConversationParticipant conversationParticipant : conversationParticipants){
-          WebSocketSession sessionTo = sessionRegistry.getSession(conversationParticipant.getUserId().toString());
+          if (conversationParticipant.getUserId() != senderId) {
+            WebSocketSession sessionTo =
+                sessionRegistry.getSession(conversationParticipant.getUserId().toString());
 
-          if (sessionTo != null) {
-            sessionTo.sendMessage(new TextMessage("Hello, " + payload + "!"));
-          } else {
-            session.sendMessage(new TextMessage("{\"error\": \"User not found\"}"));
+            if (sessionTo != null) {
+              sessionTo.sendMessage(new TextMessage("Hello, " + payload + "!"));
+            } else {
+              messageToSendService.createMessageTo(
+                  new MessageToSend(
+                      messageLocal.getMessageId(), conversationParticipant.getUserId()));
+              session.sendMessage(new TextMessage("{\"error\": \"User not found\"}"));
+            }
           }
         }
         break;
@@ -72,19 +120,12 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
   @Override
   public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         super.afterConnectionEstablished(session);
+    Long userId = connectionAction.registerUser(sessionRegistry, session);
+    List<Message>  messageList = messageAction.getNotDeliveredMessages(userId);
+    messageAction.sendMessages(messageList, session);
 
-        String userId = getUserIdFromSession(session);
-        sessionRegistry.registerSession(userId, session);
-
-        System.out.println(session.getUri());
     }
 
-    private String getUserIdFromSession(WebSocketSession session) {
-        session.getAttributes();
-        HttpHeaders headers = session.getHandshakeHeaders();
 
 
-        // Extract user ID from session, e.g., from a query parameter or header
-        return headers.get("token").getFirst();
-    }
 }
