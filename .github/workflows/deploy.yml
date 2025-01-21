@@ -28,17 +28,17 @@ jobs:
         uses: docker/setup-buildx-action@v1
 
       - name: Build Docker image
-        run: docker build -t websocket-app:latest .
+        run: docker build -t gery12492/web-socket:1.0.0 .
 
       - name: Install sshpass
         run: sudo apt-get update && sudo apt-get install -y sshpass
 
       - name: Deploy to Raspberry Pi
         run: |
-          sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no pi@raspberry-pi-ip << 'EOF'
+          sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no pi@pingnest.ddns.net << 'EOF'
           docker stop websocket-app || true
           docker rm websocket-app || true
-          docker run -d --name websocket-app --network my-network -p 8081:8081 websocket-app:latest
+          docker run -d --name websocket-app --network my-network -p 8081:8081 gery12492/web-socket:latest
           EOF
         env:
           SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
