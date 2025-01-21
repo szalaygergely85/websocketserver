@@ -18,8 +18,11 @@ jobs:
         with:
           java-version: 21
 
+      - name: Give executable permissions to gradlew
+        run: chmod +x ./gradlew
+
       - name: Build the project
-        run: ./mvnw package
+        run: ./gradlew build
 
       - name: Set up Docker
         uses: docker/setup-buildx-action@v1
@@ -27,12 +30,15 @@ jobs:
       - name: Build Docker image
         run: docker build -t websocket-app:latest .
 
+      - name: Install sshpass
+        run: sudo apt-get update && sudo apt-get install -y sshpass
+
       - name: Deploy to Raspberry Pi
         run: |
           sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no pi@raspberry-pi-ip << 'EOF'
           docker stop websocket-app || true
           docker rm websocket-app || true
-          docker run -d --name websocket-app -p 8080:8080 websocket-app:latest
+          docker run -d --name websocket-app --network my-network -p 8081:8081 websocket-app:latest
           EOF
         env:
           SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
