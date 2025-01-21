@@ -1,4 +1,5 @@
-FROM eclipse-temurin:21-jre
+FROM openjdk:openjdk:21-ea-jdk
 ARG JAR_FILE=build/libs/*.jar
 COPY ${JAR_FILE} app.jar
+
 ENTRYPOINT ["java", "-jar", "/app.jar"]
