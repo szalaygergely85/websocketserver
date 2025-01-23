@@ -1,4 +1,4 @@
-FROM openjdk:openjdk:21-ea-jdk
+FROM arm32v7/eclipse-temurin:17-jre-jammy
 ARG JAR_FILE=build/libs/*.jar
 COPY ${JAR_FILE} app.jar
 

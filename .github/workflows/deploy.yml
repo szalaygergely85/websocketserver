@@ -13,10 +13,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up JDK 21
+      - name: Set up JDK 17
         uses: actions/setup-java@v1
         with:
-          java-version: 21
+          java-version: 17
 
       - name: Give executable permissions to gradlew
         run: chmod +x ./gradlew
@@ -36,7 +36,7 @@ jobs:
       - name: Build Docker image for multiple architectures
         run: |
           docker buildx create --use
-          docker buildx build --platform linux/arm64,linux/amd64 -t gery12492/web-socket:1.0.0 --push .
+          docker buildx build --platform linux/arm/v7 -t gery12492/web-socket:1.0.0 --push .
 
       - name: Confirm Docker image push
         run: docker images

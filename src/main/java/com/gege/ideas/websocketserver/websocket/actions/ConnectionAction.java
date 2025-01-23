@@ -45,7 +45,7 @@ public class ConnectionAction {
         HttpHeaders headers = session.getHandshakeHeaders();
         String token = null;
         if (headers.containsKey("token") && headers.get("token") != null) {
-            token = headers.get("token").getFirst();
+            token = headers.getFirst("token");
         }
 
         if (token == null) {

@@ -14,15 +14,14 @@ import com.gege.ideas.websocketserver.websocket.actions.MessageAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.stereotype.Component;
+
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.util.List;
 
-@Component
+
 public class MyWebSocketHandler extends TextWebSocketHandler {
 
   private static final Logger logger = LoggerFactory.getLogger(MyWebSocketHandler.class);
