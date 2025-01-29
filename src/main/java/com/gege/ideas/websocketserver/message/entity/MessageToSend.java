@@ -1,6 +1,6 @@
 package com.gege.ideas.websocketserver.message.entity;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity

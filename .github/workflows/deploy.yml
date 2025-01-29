@@ -43,7 +43,7 @@ jobs:
       - name: Build Docker image for multiple architectures
         run: |
           docker buildx create --use
-          docker buildx build --no-cache --platform linux/arm/v7 -t gery12492/web-socket:1.0.0 --push .
+          docker buildx build --no-cache --platform linux/arm/v7,linux/amd64  -t gery12492/web-socket:1.0.0 --push .
 
       - name: Confirm Docker image push
         run: docker images

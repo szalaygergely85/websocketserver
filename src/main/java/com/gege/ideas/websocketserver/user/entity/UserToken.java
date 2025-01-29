@@ -1,6 +1,6 @@
 package com.gege.ideas.websocketserver.user.entity;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 
 import java.util.Date;
 
