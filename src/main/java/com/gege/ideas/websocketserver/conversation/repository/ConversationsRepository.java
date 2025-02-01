@@ -1,6 +1,5 @@
 package com.gege.ideas.websocketserver.conversation.repository;
 
-
 import com.gege.ideas.websocketserver.conversation.entity.Conversation;
 import org.springframework.data.jpa.repository.JpaRepository;
 

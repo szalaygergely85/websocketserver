@@ -1,13 +1,11 @@
 package com.gege.ideas.websocketserver.conversation.service;
 
-
-import java.util.ArrayList;
-import java.util.List;
-
 import com.gege.ideas.websocketserver.conversation.entity.ConversationParticipant;
 import com.gege.ideas.websocketserver.conversation.repository.ConversationParticipantsRepository;
 import com.gege.ideas.websocketserver.user.entity.User;
 import com.gege.ideas.websocketserver.user.service.UserService;
+import java.util.ArrayList;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -126,10 +124,12 @@ public class ConversationParticipantsService {
       return participants;
    }
 
-    public Object addConversationParticipants(List<ConversationParticipant> participants) {
-      for (ConversationParticipant participant : participants){
+   public Object addConversationParticipants(
+      List<ConversationParticipant> participants
+   ) {
+      for (ConversationParticipant participant : participants) {
          conversationParticipantsRepository.save(participant);
       }
       return true;
-    }
+   }
 }

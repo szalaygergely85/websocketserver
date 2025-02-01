@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-    User findByUserTokenId(Long userTokenId);
+   User findByUserTokenId(Long userTokenId);
 }

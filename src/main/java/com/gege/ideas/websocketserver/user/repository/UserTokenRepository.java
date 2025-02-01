@@ -4,8 +4,7 @@ import com.gege.ideas.websocketserver.user.entity.UserToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserTokenRepository extends JpaRepository<UserToken, Long> {
+   UserToken findUserTokenByToken(String token);
 
-    UserToken findUserTokenByToken(String token);
-
-    UserToken findByUserTokenId(Long id);
+   UserToken findByUserTokenId(Long id);
 }

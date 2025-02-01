@@ -1,14 +1,12 @@
 package com.gege.ideas.websocketserver.conversation.service;
 
-
-import java.util.ArrayList;
-import java.util.List;
-
 import com.gege.ideas.websocketserver.conversation.entity.Conversation;
 import com.gege.ideas.websocketserver.conversation.entity.ConversationParticipant;
 import com.gege.ideas.websocketserver.conversation.repository.ConversationsRepository;
 import com.gege.ideas.websocketserver.user.entity.User;
 import com.gege.ideas.websocketserver.user.service.UserService;
+import java.util.ArrayList;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,8 +16,6 @@ public class ConversationService {
    private UserService userService;
    private ConversationParticipantsService conversationParticipantsService;
    private ConversationsRepository _conversationsRepository;
-
-
 
    public Long addConversation(List<User> participants, String authToken) {
       Long conversationId = _getExistingConversationId(participants);
@@ -46,14 +42,11 @@ public class ConversationService {
       return conversationId;
    }
 
-
-
    public Conversation getConversationById(Long conversationId) {
       return _conversationsRepository.findConversationByConversationId(
          conversationId
       );
    }
-
 
    public List<Long> getConversationsWithNewMessage(
       List<Long> conversationIds

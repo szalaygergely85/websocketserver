@@ -1,11 +1,12 @@
 package com.gege.ideas.websocketserver.message.entity;
 
-import javax.persistence.*;
 import java.io.Serializable;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "messagetosend")
 public class MessageToSend implements Serializable {
+
    @Id
    @GeneratedValue(strategy = GenerationType.IDENTITY)
    private Long messageToSendId;
@@ -25,8 +26,7 @@ public class MessageToSend implements Serializable {
       this.delivered = false;
    }
 
-   public MessageToSend() {
-   }
+   public MessageToSend() {}
 
    public Long getMessageId() {
       return messageId;

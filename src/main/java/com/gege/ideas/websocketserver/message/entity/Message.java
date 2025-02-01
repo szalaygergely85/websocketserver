@@ -1,7 +1,7 @@
 package com.gege.ideas.websocketserver.message.entity;
 
-import javax.persistence.*;
 import java.io.Serializable;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "message")
@@ -70,8 +70,6 @@ public class Message implements Serializable {
       this.contentEncrypted = content;
    }
 
-
-
    public int getType() {
       return type;
    }
@@ -79,10 +77,6 @@ public class Message implements Serializable {
    public void setType(int type) {
       this.type = type;
    }
-
-
-
-
 
    public String getUuid() {
       return uuid;

@@ -1,26 +1,27 @@
 package com.gege.ideas.websocketserver.websocket;
 
-import org.springframework.web.socket.WebSocketSession;
-
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import org.springframework.web.socket.WebSocketSession;
 
 public class SessionRegistry {
-    private final Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
 
-    public void registerSession(String userId, WebSocketSession session) {
-        sessions.put(userId, session);
-    }
+   private final Map<String, WebSocketSession> sessions =
+      new ConcurrentHashMap<>();
 
-    public void removeSession(String userId) {
-        sessions.remove(userId);
-    }
+   public void registerSession(String userId, WebSocketSession session) {
+      sessions.put(userId, session);
+   }
 
-    public WebSocketSession getSession(String userId) {
-        return sessions.get(userId);
-    }
+   public void removeSession(String userId) {
+      sessions.remove(userId);
+   }
 
-    public Map<String, WebSocketSession> getAllSessions() {
-        return sessions;
-    }
+   public WebSocketSession getSession(String userId) {
+      return sessions.get(userId);
+   }
+
+   public Map<String, WebSocketSession> getAllSessions() {
+      return sessions;
+   }
 }

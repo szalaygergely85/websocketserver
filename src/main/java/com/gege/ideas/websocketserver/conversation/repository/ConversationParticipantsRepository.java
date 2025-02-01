@@ -1,10 +1,8 @@
 package com.gege.ideas.websocketserver.conversation.repository;
 
-
 import com.gege.ideas.websocketserver.conversation.entity.ConversationParticipant;
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ConversationParticipantsRepository
    extends JpaRepository<ConversationParticipant, Long> {

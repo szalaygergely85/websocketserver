@@ -4,7 +4,6 @@ import com.gege.ideas.websocketserver.conversation.service.ConversationParticipa
 import com.gege.ideas.websocketserver.conversation.service.ConversationService;
 import com.gege.ideas.websocketserver.message.entity.Message;
 import com.gege.ideas.websocketserver.message.repository.MessageRepository;
-
 import com.gege.ideas.websocketserver.user.service.UserService;
 import com.gege.ideas.websocketserver.user.service.UserTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +19,6 @@ public class MessageService {
 
    private final ConversationService conversationService;
 
-
    @Autowired
    public MessageService(
       MessageRepository messageRepository,
@@ -35,32 +33,26 @@ public class MessageService {
       this.conversationParticipantsService = conversationParticipantsService;
 
       this.conversationService = conversationService;
-}
-
+   }
 
    public Message createMessage(Message message) {
-
       Message messageExisting = messageRepository.findByUuid(message.getUuid());
-              if (messageExisting!=null){
-return messageExisting;
-              }else {
-      return messageRepository.save(message);
-    }
-  }
-
-
-
+      if (messageExisting != null) {
+         return messageExisting;
+      } else {
+         return messageRepository.save(message);
+      }
+   }
 
    public void deleteMessage(Message message) {
       messageRepository.delete(message);
    }
 
+   public Message getMessageById(Long messageId) {
+      return messageRepository.findByMessageId(messageId);
+   }
 
-    public Message getMessageById(Long messageId) {
-       return messageRepository.findByMessageId(messageId);
-    }
-
-    public Message getMessageByUuid(String uuid) {
-       return messageRepository.findByUuid(uuid);
-    }
+   public Message getMessageByUuid(String uuid) {
+      return messageRepository.findByUuid(uuid);
+   }
 }
