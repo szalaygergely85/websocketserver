@@ -1,10 +1,15 @@
 package com.gege.ideas.websocketserver.websocket.actions;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.gege.ideas.websocketserver.message.constans.MessageConstans;
 import com.gege.ideas.websocketserver.message.entity.Message;
 import com.gege.ideas.websocketserver.message.entity.MessageToSend;
 import com.gege.ideas.websocketserver.message.service.MessageService;
 import com.gege.ideas.websocketserver.message.service.MessageToSendService;
 import com.gege.ideas.websocketserver.util.JsonUtil;
+import com.gege.ideas.websocketserver.websocket.MyWebSocketHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
@@ -16,10 +21,10 @@ import java.util.List;
 
 @Component
 public class MessageAction {
+
+    private static final Logger logger = LoggerFactory.getLogger(MessageAction.class);
     private MessageToSendService messageToSendService;
-
     private MessageService messageService;
-
     @Autowired
     public MessageAction(MessageToSendService messageToSendService, MessageService messageService) {
         this.messageToSendService = messageToSendService;
@@ -51,5 +56,37 @@ public class MessageAction {
                 throw e; // Rethrow if necessary, or handle gracefully
             }
         }
+    }
+
+    public void setMessageArrived(JsonNode jsonNode) {
+        String uuid = jsonNode.has("uuid") ? jsonNode.get("uuid").asText() : null;
+        String userIdString = jsonNode.has("userId") ? jsonNode.get("userId").asText() : null;
+        Long userId = Long.parseLong(userIdString);
+        logger.info("Message from(userId): " + userIdString + ", uuid: " + uuid);
+        Message messageEntity = messageService.getMessageByUuid(uuid);
+        messageToSendService.markMessageAsDelivered(messageEntity.getMessageId(), userId);
+    }
+
+    public void answeringToPing(WebSocketSession session) throws IOException {
+        String pongMessage = "{\"type\": \"pong\"}";
+        session.sendMessage(new TextMessage(pongMessage));
+        System.out.println("Ping received, responding with pong");
+    }
+
+    public Message transformJsonToMessage(JsonNode jsonNode) {
+        String userIdString = jsonNode.has("senderId") ? jsonNode.get("senderId").asText() : null;
+        String conversation = jsonNode.has("conversationId") ? jsonNode.get("conversationId").asText() : null;
+        String uuid = jsonNode.has("uuid") ? jsonNode.get("uuid").asText() : null;
+        String timestampString = jsonNode.has("timestamp") ? jsonNode.get("timestamp").asText() : null;
+        String contentEncrypted = jsonNode.has("contentEncrypted") ? jsonNode.get("contentEncrypted").asText() : null;
+
+        logger.info("Message from(userId): " + userIdString +" Conversation: " + conversation + ", uuid: " + uuid);
+
+
+        Long conversationId = Long.parseLong(conversation);
+        Long senderId = Long.parseLong(userIdString);
+        Long timestamp = Long.parseLong(timestampString);
+
+        return messageService.createMessage(new Message(conversationId, senderId, timestamp, contentEncrypted, MessageConstans.MESSAGE, uuid));
     }
 }
