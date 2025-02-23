@@ -15,7 +15,7 @@ import org.springframework.web.socket.WebSocketSession;
 public class ConnectionAction {
 
    private static final Logger logger = LoggerFactory.getLogger(
-      MyWebSocketHandler.class
+           "com.websocket.connection"
    );
    private UserService userService;
 
@@ -31,10 +31,10 @@ public class ConnectionAction {
       Long userId = _getUserIdFromSession(session);
       if (userId != null) {
          sessionRegistry.registerSession(userId.toString(), session);
-         logger.info("User connected: " + userId);
+         logger.info("User connected: " + userId + ": " + session.getLocalAddress());
          return userId;
       } else {
-         logger.error("User not found: " + userId);
+         session.close();
          return null;
       }
    }
@@ -51,7 +51,7 @@ public class ConnectionAction {
       if (token == null) {
          // Handle the case where the token is missing
          logger.error("Token is missing in the headers.");
-         session.close();
+
          return null;
       }
 

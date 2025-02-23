@@ -82,11 +82,14 @@ public class MessageAction {
 
    public void answeringToPing(WebSocketSession session) throws IOException {
       String pongMessage = "{\"type\": \"pong\"}";
+
+      //  System.out.println("Ping received, responding with pong");
+    if (session.isOpen()) {
       session.sendMessage(new TextMessage(pongMessage));
-      System.out.println("Ping received, responding with pong");
+      }
    }
 
-   public Message transformJsonToMessage(JsonNode jsonNode) {
+   public Message saveJsonToMessage(JsonNode jsonNode) {
       String userIdString = jsonNode.has("senderId")
          ? jsonNode.get("senderId").asText()
          : null;

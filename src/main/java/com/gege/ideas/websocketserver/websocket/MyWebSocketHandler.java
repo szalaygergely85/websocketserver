@@ -27,7 +27,7 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
       String payload = message.getPayload();
       System.out.println(payload);
       ObjectMapper objectMapper = new ObjectMapper();
-      JsonNode jsonNode = objectMapper.readTree(payload);
+    JsonNode jsonNode = objectMapper.readTree(payload);
 
       int type = jsonNode.get("type").asInt();
 
@@ -39,7 +39,7 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
             messageAction.answeringToPing(session);
             break;
          case MessageConstans.MESSAGE:
-            Message messageLocal = messageAction.transformJsonToMessage(
+            Message messageLocal = messageAction.saveJsonToMessage(
                jsonNode
             );
 
@@ -57,7 +57,8 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
                      conversationParticipant.getUserId().toString()
                   );
 
-                  if (sessionTo != null) {
+                  if (sessionTo != null && sessionTo.isOpen()) {
+                     System.out.println("Forwarding:" + message);
                      sessionTo.sendMessage(message);
                   } else {
                      messageToSendService.createMessageTo(

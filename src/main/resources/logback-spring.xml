@@ -16,10 +16,21 @@
         </encoder>
     </appender>
 
+    <appender name="CONNECTION_LOG" class="ch.qos.logback.core.FileAppender">
+        <file>logs/connection.log</file>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
     <!-- Set log level and appenders -->
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE"/>
     </root>
+
+    <logger name="com.websocket.connection" level="INFO" additivity="false">
+        <appender-ref ref="CONNECTION_LOG"/>
+    </logger>
 
 </configuration>
