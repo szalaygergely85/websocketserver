@@ -84,8 +84,8 @@ public class MessageAction {
       String pongMessage = "{\"type\": \"pong\"}";
 
       //  System.out.println("Ping received, responding with pong");
-    if (session.isOpen()) {
-      session.sendMessage(new TextMessage(pongMessage));
+      if (session.isOpen()) {
+         session.sendMessage(new TextMessage(pongMessage));
       }
    }
 

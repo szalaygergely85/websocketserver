@@ -1,7 +1,6 @@
 package com.gege.ideas.websocketserver.websocket.actions;
 
 import com.gege.ideas.websocketserver.user.service.UserService;
-import com.gege.ideas.websocketserver.websocket.MyWebSocketHandler;
 import com.gege.ideas.websocketserver.websocket.SessionRegistry;
 import java.io.IOException;
 import org.slf4j.Logger;
@@ -15,7 +14,7 @@ import org.springframework.web.socket.WebSocketSession;
 public class ConnectionAction {
 
    private static final Logger logger = LoggerFactory.getLogger(
-           "com.websocket.connection"
+      "com.websocket.connection"
    );
    private UserService userService;
 
@@ -31,7 +30,9 @@ public class ConnectionAction {
       Long userId = _getUserIdFromSession(session);
       if (userId != null) {
          sessionRegistry.registerSession(userId.toString(), session);
-         logger.info("User connected: " + userId + ": " + session.getLocalAddress());
+         logger.info(
+            "User connected: " + userId + ": " + session.getLocalAddress()
+         );
          return userId;
       } else {
          session.close();
