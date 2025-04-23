@@ -3,31 +3,23 @@ package com.gege.ideas.websocketserver.message.entity;
 import java.io.Serializable;
 import javax.persistence.*;
 
-@Entity
-@Table(name = "message")
+
 public class Message implements Serializable {
 
-   @Id
-   @GeneratedValue(strategy = GenerationType.IDENTITY)
+
    private Long messageId;
 
-   @Column(nullable = false)
+
    private long conversationId;
 
-   @Column(nullable = false)
    private long senderId;
 
-   @Column(nullable = false)
    private long timestamp;
 
-   @Lob
-   @Column(columnDefinition = "LONGTEXT")
    private String contentEncrypted;
 
-   @Column
    private int type;
 
-   @Column(columnDefinition = "LONGTEXT")
    private String uuid;
 
    public Long getMessageId() {

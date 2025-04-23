@@ -1,8 +1,8 @@
 package com.gege.ideas.websocketserver.user.service;
 
+import com.gege.ideas.websocketserver.user.api.UserApiClient;
 import com.gege.ideas.websocketserver.user.entity.User;
-import com.gege.ideas.websocketserver.user.entity.UserToken;
-import com.gege.ideas.websocketserver.user.repository.UserRepository;
+
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,37 +10,26 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserService {
 
-   private final UserRepository userRepository;
-   private final UserTokenService userTokenService;
+
+   private final UserApiClient userApiClient;
 
    @Autowired
    public UserService(
-      UserRepository userRepository,
-      UserTokenService userTokenService
+           UserApiClient userApiClient
    ) {
-      this.userRepository = userRepository;
-      this.userTokenService = userTokenService;
+      this.userApiClient = userApiClient;
    }
 
    public User getUserById(Long id) {
-      Optional<User> userOptional = userRepository.findById(id);
-      if (userOptional.isPresent()) {
-         return userOptional.get();
-      } else {
-         return null;
-      }
+      return userApiClient.getUserById(id);
+   }
+
+   public User getUserByToken(String token) {
+      return userApiClient.getUserByToken(token);
    }
 
    public Long getUserIdByToken(String token) {
-      UserToken userToken = userTokenService.getUserTokenByToken(token);
-      if (userToken != null) {
-         User user = userRepository.findByUserTokenId(
-            userToken.getUserTokenId()
-         );
-
+         User user = getUserByToken(token);
          return user.getUserId();
-      } else {
-         return null;
-      }
    }
 }

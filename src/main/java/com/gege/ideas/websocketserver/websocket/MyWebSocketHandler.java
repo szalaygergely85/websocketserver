@@ -6,9 +6,9 @@ import com.gege.ideas.websocketserver.conversation.entity.ConversationParticipan
 import com.gege.ideas.websocketserver.conversation.service.ConversationParticipantsService;
 import com.gege.ideas.websocketserver.message.constans.MessageConstans;
 import com.gege.ideas.websocketserver.message.entity.Message;
-import com.gege.ideas.websocketserver.message.entity.MessageToSend;
+import com.gege.ideas.websocketserver.message.entity.PendingMessage;
 import com.gege.ideas.websocketserver.message.service.MessageService;
-import com.gege.ideas.websocketserver.message.service.MessageToSendService;
+import com.gege.ideas.websocketserver.message.service.PendingMessageService;
 import com.gege.ideas.websocketserver.websocket.actions.ConnectionAction;
 import com.gege.ideas.websocketserver.websocket.actions.MessageAction;
 import java.util.List;
@@ -24,6 +24,8 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
    @Override
    public void handleTextMessage(WebSocketSession session, TextMessage message)
       throws Exception {
+      String authToken = connectionAction.getAuthToken(session);
+
       String payload = message.getPayload();
       System.out.println(payload);
       ObjectMapper objectMapper = new ObjectMapper();
@@ -33,13 +35,14 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
 
       switch (type) {
          case MessageConstans.ARRIVAL_CONFIRMATION:
-            messageAction.setMessageArrived(jsonNode);
+            messageAction.setMessageArrived(jsonNode, authToken);
             break;
          case MessageConstans.PING:
             messageAction.answeringToPing(session);
             break;
          case MessageConstans.MESSAGE:
-            Message messageLocal = messageAction.saveJsonToMessage(jsonNode);
+            Message messageLocal =  messageService.addMessage(messageAction.jsonToMessage(jsonNode), authToken);
+
 
             List<ConversationParticipant> conversationParticipants =
                conversationParticipantsService.getParticipantsByConversationId(
@@ -59,11 +62,11 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
                      System.out.println("Forwarding:" + message);
                      sessionTo.sendMessage(message);
                   } else {
-                     messageToSendService.createMessageTo(
-                        new MessageToSend(
-                           messageLocal.getMessageId(),
-                           conversationParticipant.getUserId()
-                        )
+                     pendingMessageService.addPendingMessage(
+                        new PendingMessage(
+                           messageLocal.getUuid(),
+                           conversationParticipant.getUserId(), false
+                        ), authToken
                      );
                      session.sendMessage(
                         new TextMessage("{\"error\": \"User not found\"}")
@@ -83,9 +86,10 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
       throws Exception {
       super.afterConnectionEstablished(session);
       Long userId = connectionAction.registerUser(sessionRegistry, session);
+      String  token = connectionAction.getAuthToken(session);
       if (userId != null) {
          List<Message> messageList = messageAction.getNotDeliveredMessages(
-            userId
+                 token
          );
          messageAction.sendMessages(messageList, session);
       } else {
@@ -105,7 +109,7 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
    private MessageService messageService;
 
    @Autowired
-   private MessageToSendService messageToSendService;
+   private PendingMessageService pendingMessageService;
 
    @Autowired
    private ConnectionAction connectionAction;

@@ -1,58 +1,88 @@
 package com.gege.ideas.websocketserver.user.entity;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import javax.persistence.*;
 
-@Entity
-@Table(name = "user")
 public class User {
 
-   @Id
-   @GeneratedValue(strategy = GenerationType.IDENTITY)
    private Long userId;
 
-   @Column(nullable = false)
    private String displayName;
 
-   @Column(nullable = false)
    private String email;
-
-   @Column(nullable = false)
-   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
    private String password;
-
-   @Column(nullable = false)
-   private Long userTokenId;
-
-   @Lob
-   @Column(columnDefinition = "LONGTEXT")
    private String publicKey;
 
-   @Column
-   String profilePictureUuid;
+   private String profilePictureUuid;
 
-   @Column
-   String status;
+   private String status;
 
-   @Column
-   String tags;
+   private String tags;
 
-   public User() {}
+   private String token;
+
+   private Long lastUpdated;
+
+   public Long getLastUpdated() {
+      return lastUpdated;
+   }
+
+   public void setLastUpdated(Long lastUpdated) {
+      this.lastUpdated = lastUpdated;
+   }
+
+   public String getProfilePictureUuid() {
+      return profilePictureUuid;
+   }
+
+   public void setProfilePictureUuid(String profilePictureUuid) {
+      this.profilePictureUuid = profilePictureUuid;
+   }
+
+   public String getStatus() {
+      return status;
+   }
+
+   public void setStatus(String status) {
+      this.status = status;
+   }
+
+   public String getTags() {
+      return tags;
+   }
+
+   public void setTags(String tags) {
+      this.tags = tags;
+   }
 
    public Long getUserId() {
       return userId;
    }
 
-   public void setUserId(Long userId) {
-      this.userId = userId;
+   public void setUserId(Long id) {
+      this.userId = id;
    }
 
-   public Long getUserTokenId() {
-      return userTokenId;
+   public String getDisplayName() {
+      return displayName;
    }
 
-   public void setUserTokenId(Long userTokenId) {
-      this.userTokenId = userTokenId;
+   public void setDisplayName(String surName) {
+      this.displayName = surName;
+   }
+
+   public String getEmail() {
+      return email;
+   }
+
+   public void setEmail(String email) {
+      this.email = email;
+   }
+
+   public String getPassword() {
+      return password;
+   }
+
+   public void setPassword(String password) {
+      this.password = password;
    }
 
    public String getPublicKey() {
@@ -62,4 +92,15 @@ public class User {
    public void setPublicKey(String publicKey) {
       this.publicKey = publicKey;
    }
+
+   public String getToken() {
+      return token;
+   }
+
+   public void setToken(String token) {
+      this.token = token;
+   }
+
+   public User() {}
+
 }

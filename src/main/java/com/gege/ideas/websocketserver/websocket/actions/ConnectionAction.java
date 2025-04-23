@@ -40,8 +40,7 @@ public class ConnectionAction {
       }
    }
 
-   private Long _getUserIdFromSession(WebSocketSession session)
-      throws IOException {
+   public String getAuthToken(WebSocketSession session) {
       session.getAttributes();
       HttpHeaders headers = session.getHandshakeHeaders();
       String token = null;
@@ -55,6 +54,12 @@ public class ConnectionAction {
 
          return null;
       }
+      return token;
+   }
+
+   private Long _getUserIdFromSession(WebSocketSession session)
+      throws IOException {
+      String token = getAuthToken(session);
 
       return userService.getUserIdByToken(token);
    }

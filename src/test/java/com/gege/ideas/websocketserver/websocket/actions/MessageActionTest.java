@@ -8,11 +8,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.gege.ideas.websocketserver.message.api.MessageApiClient;
 import com.gege.ideas.websocketserver.message.constans.MessageConstans;
 import com.gege.ideas.websocketserver.message.entity.Message;
-import com.gege.ideas.websocketserver.message.entity.MessageToSend;
+import com.gege.ideas.websocketserver.message.entity.PendingMessage;
 import com.gege.ideas.websocketserver.message.service.MessageService;
-import com.gege.ideas.websocketserver.message.service.MessageToSendService;
+import com.gege.ideas.websocketserver.message.service.PendingMessageService;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -27,10 +28,13 @@ import org.springframework.web.socket.WebSocketSession;
 public class MessageActionTest {
 
    @Mock
-   private MessageToSendService messageToSendService;
+   private PendingMessageService pendingMessageService;
 
    @Mock
    private MessageService messageService;
+
+   @Mock
+   private MessageApiClient messageApiClient;
 
    @Mock
    private WebSocketSession session;
@@ -46,7 +50,7 @@ public class MessageActionTest {
    @Test
    void testGetNotDeliveredMessages() {
       // Mock dependencies
-      MessageToSend msgToSend = new MessageToSend();
+      PendingMessage msgToSend = new PendingMessage();
       msgToSend.setMessageId(1L);
       Message message = new Message(
          1L,
@@ -57,17 +61,17 @@ public class MessageActionTest {
          "uuid-123"
       );
 
-      when(messageToSendService.getNotDeliveredMessages(1L))
+      when(pendingMessageService.getNotDeliveredMessages("aaa"))
          .thenReturn(List.of(msgToSend));
       when(messageService.getMessageById(1L)).thenReturn(message);
 
       // Call method
-      List<Message> messages = messageAction.getNotDeliveredMessages(1L);
+      List<Message> messages = messageAction.getNotDeliveredMessages("aaa");
 
       // Verify results
       assertEquals(1, messages.size());
       assertEquals("uuid-123", messages.get(0).getUuid());
-      verify(messageToSendService).getNotDeliveredMessages(1L);
+      verify(pendingMessageService).getNotDeliveredMessages("aaa");
       verify(messageService).getMessageById(1L);
    }
 
@@ -81,7 +85,7 @@ public class MessageActionTest {
    }
 
    @Test
-   void testSaveJsonToMessage_ValidInput() throws Exception {
+   void testJsonToMessage_ValidInput() throws Exception {
       String json =
          """
          	{
@@ -101,10 +105,10 @@ public class MessageActionTest {
          MessageConstans.MESSAGE,
          "abc-123"
       );
-      when(messageService.createMessage(any(Message.class)))
+      when(messageApiClient.addMessage(any(Message.class), "TOKEN"))
          .thenReturn(expectedMessage);
 
-      Message result = messageAction.saveJsonToMessage(jsonNode);
+      Message result = messageService.addMessage(messageAction.jsonToMessage(jsonNode), "TOKEN");
 
       assertNotNull(result);
       assertEquals(2L, result.getConversationId());
@@ -113,7 +117,7 @@ public class MessageActionTest {
       assertEquals("encryptedContent", result.getContentEncrypted());
       assertEquals("abc-123", result.getUuid());
       assertEquals(MessageConstans.MESSAGE, result.getType());
-      verify(messageService).createMessage(any(Message.class));
+      verify(messageService).addMessage(any(Message.class), "TOKEN");
    }
 
    @Test

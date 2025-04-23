@@ -3,9 +3,9 @@ package com.gege.ideas.websocketserver.websocket.actions;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.gege.ideas.websocketserver.message.constans.MessageConstans;
 import com.gege.ideas.websocketserver.message.entity.Message;
-import com.gege.ideas.websocketserver.message.entity.MessageToSend;
+import com.gege.ideas.websocketserver.message.entity.PendingMessage;
 import com.gege.ideas.websocketserver.message.service.MessageService;
-import com.gege.ideas.websocketserver.message.service.MessageToSendService;
+import com.gege.ideas.websocketserver.message.service.PendingMessageService;
 import com.gege.ideas.websocketserver.util.JsonUtil;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,25 +23,26 @@ public class MessageAction {
    private static final Logger logger = LoggerFactory.getLogger(
       MessageAction.class
    );
-   private MessageToSendService messageToSendService;
+   private PendingMessageService pendingMessageService;
    private MessageService messageService;
 
    @Autowired
    public MessageAction(
-      MessageToSendService messageToSendService,
+      PendingMessageService pendingMessageService,
       MessageService messageService
    ) {
-      this.messageToSendService = messageToSendService;
+      this.pendingMessageService = pendingMessageService;
       this.messageService = messageService;
    }
 
-   public List<Message> getNotDeliveredMessages(Long userId) {
-      List<MessageToSend> messagesNotDelivered =
-         messageToSendService.getNotDeliveredMessages(userId);
+   public List<Message> getNotDeliveredMessages(String token) {
+      List<PendingMessage> messagesNotDelivered =
+         pendingMessageService.getNotDeliveredMessages(token);
       List<Message> messageList = new ArrayList<>();
-      for (MessageToSend messageNotDelivered : messagesNotDelivered) {
-         Message message = messageService.getMessageById(
-            messageNotDelivered.getMessageId()
+      for (PendingMessage messageNotDelivered : messagesNotDelivered) {
+         Message message = messageService.getMessageByUuid(
+            messageNotDelivered.getUuid(),
+                 token
          );
          if (message != null) {
             messageList.add(message);
@@ -66,17 +67,17 @@ public class MessageAction {
       }
    }
 
-   public void setMessageArrived(JsonNode jsonNode) {
+   public void setMessageArrived(JsonNode jsonNode, String token) {
       String uuid = jsonNode.has("uuid") ? jsonNode.get("uuid").asText() : null;
       String userIdString = jsonNode.has("userId")
          ? jsonNode.get("userId").asText()
          : null;
       Long userId = Long.parseLong(userIdString);
       logger.info("Message from(userId): " + userIdString + ", uuid: " + uuid);
-      Message messageEntity = messageService.getMessageByUuid(uuid);
-      messageToSendService.markMessageAsDelivered(
-         messageEntity.getMessageId(),
-         userId
+
+      pendingMessageService.markMessageAsDelivered(
+         uuid,
+         token
       );
    }
 
@@ -89,7 +90,7 @@ public class MessageAction {
       }
    }
 
-   public Message saveJsonToMessage(JsonNode jsonNode) {
+   public Message jsonToMessage(JsonNode jsonNode) {
       String userIdString = jsonNode.has("senderId")
          ? jsonNode.get("senderId").asText()
          : null;
@@ -117,7 +118,7 @@ public class MessageAction {
       Long senderId = Long.parseLong(userIdString);
       Long timestamp = Long.parseLong(timestampString);
 
-      return messageService.createMessage(
+      return
          new Message(
             conversationId,
             senderId,
@@ -125,7 +126,7 @@ public class MessageAction {
             contentEncrypted,
             MessageConstans.MESSAGE,
             uuid
-         )
+
       );
    }
 }
