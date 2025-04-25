@@ -1,12 +1,9 @@
 package com.gege.ideas.websocketserver.DTO;
 
-
-
 import com.gege.ideas.websocketserver.conversation.entity.Conversation;
 import com.gege.ideas.websocketserver.conversation.entity.ConversationParticipant;
 import com.gege.ideas.websocketserver.message.entity.Message;
 import com.gege.ideas.websocketserver.user.entity.User;
-
 import java.io.Serializable;
 import java.util.List;
 
@@ -29,6 +26,8 @@ public class ConversationDTO implements Serializable {
       this.users = users;
       this.messageEntry = messageEntry;
    }
+
+   public ConversationDTO() {}
 
    public Conversation getConversation() {
       return conversation;

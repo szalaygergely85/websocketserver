@@ -11,6 +11,7 @@ public class WebSocketServerApplication {
    public static void main(String[] args) {
       SpringApplication.run(WebSocketServerApplication.class, args);
    }
+
    @Bean
    public RestTemplate restTemplate() {
       return new RestTemplate();

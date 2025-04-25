@@ -1,6 +1,5 @@
 package com.gege.ideas.websocketserver.user.entity;
 
-
 public class User {
 
    private Long userId;
@@ -102,5 +101,4 @@ public class User {
    }
 
    public User() {}
-
 }

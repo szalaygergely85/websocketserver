@@ -2,21 +2,16 @@ package com.gege.ideas.websocketserver.user.service;
 
 import com.gege.ideas.websocketserver.user.api.UserApiClient;
 import com.gege.ideas.websocketserver.user.entity.User;
-
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
 
-
    private final UserApiClient userApiClient;
 
    @Autowired
-   public UserService(
-           UserApiClient userApiClient
-   ) {
+   public UserService(UserApiClient userApiClient) {
       this.userApiClient = userApiClient;
    }
 
@@ -29,7 +24,7 @@ public class UserService {
    }
 
    public Long getUserIdByToken(String token) {
-         User user = getUserByToken(token);
-         return user.getUserId();
+      User user = getUserByToken(token);
+      return user.getUserId();
    }
 }

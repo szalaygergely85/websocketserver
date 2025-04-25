@@ -39,10 +39,10 @@ public class MessageAction {
       List<PendingMessage> messagesNotDelivered =
          pendingMessageService.getNotDeliveredMessages(token);
       List<Message> messageList = new ArrayList<>();
-      for (PendingMessage messageNotDelivered : messagesNotDelivered) {
+      for (PendingMessage pendingMessage : messagesNotDelivered) {
          Message message = messageService.getMessageByUuid(
-            messageNotDelivered.getUuid(),
-                 token
+            pendingMessage.getUuid(),
+            token
          );
          if (message != null) {
             messageList.add(message);
@@ -75,14 +75,11 @@ public class MessageAction {
       Long userId = Long.parseLong(userIdString);
       logger.info("Message from(userId): " + userIdString + ", uuid: " + uuid);
 
-      pendingMessageService.markMessageAsDelivered(
-         uuid,
-         token
-      );
+      pendingMessageService.markMessageAsDelivered(uuid, token);
    }
 
    public void answeringToPing(WebSocketSession session) throws IOException {
-      String pongMessage = "{\"type\": \"pong\"}";
+      String pongMessage = "{\"type\": \" " + MessageConstans.PING + "\"}";
 
       //  System.out.println("Ping received, responding with pong");
       if (session.isOpen()) {
@@ -118,15 +115,13 @@ public class MessageAction {
       Long senderId = Long.parseLong(userIdString);
       Long timestamp = Long.parseLong(timestampString);
 
-      return
-         new Message(
-            conversationId,
-            senderId,
-            timestamp,
-            contentEncrypted,
-            MessageConstans.MESSAGE,
-            uuid
-
+      return new Message(
+         conversationId,
+         senderId,
+         timestamp,
+         contentEncrypted,
+         MessageConstans.MESSAGE,
+         uuid
       );
    }
 }

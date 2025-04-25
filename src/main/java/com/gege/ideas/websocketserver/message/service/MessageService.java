@@ -4,15 +4,12 @@ import com.gege.ideas.websocketserver.conversation.service.ConversationParticipa
 import com.gege.ideas.websocketserver.conversation.service.ConversationService;
 import com.gege.ideas.websocketserver.message.api.MessageApiClient;
 import com.gege.ideas.websocketserver.message.entity.Message;
-
 import com.gege.ideas.websocketserver.user.service.UserService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class MessageService {
-
 
    private final UserService userService;
    private final ConversationParticipantsService conversationParticipantsService;
@@ -21,18 +18,13 @@ public class MessageService {
 
    private final MessageApiClient messageApiClient;
 
-
-
    @Autowired
    public MessageService(
-           MessageApiClient messageApiClient,
-
+      MessageApiClient messageApiClient,
       UserService userService,
       ConversationParticipantsService conversationParticipantsService,
       ConversationService conversationService
-
    ) {
-
       this.messageApiClient = messageApiClient;
 
       this.userService = userService;
@@ -40,8 +32,6 @@ public class MessageService {
 
       this.conversationService = conversationService;
    }
-
-
 
    public void deleteMessage(Message message, String token) {
       messageApiClient.delete(message, token);

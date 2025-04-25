@@ -6,10 +6,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ApiProperties {
 
-    @Value("${rest.api.base-url}")
-    private String baseUrl;
+   @Value("${rest.api.base-url}")
+   private String baseUrl;
 
-    public String getBaseUrl() {
-        return baseUrl;
-    }
+   public String getBaseUrl() {
+      return baseUrl;
+   }
 }

@@ -108,7 +108,10 @@ public class MessageActionTest {
       when(messageApiClient.addMessage(any(Message.class), "TOKEN"))
          .thenReturn(expectedMessage);
 
-      Message result = messageService.addMessage(messageAction.jsonToMessage(jsonNode), "TOKEN");
+      Message result = messageService.addMessage(
+         messageAction.jsonToMessage(jsonNode),
+         "TOKEN"
+      );
 
       assertNotNull(result);
       assertEquals(2L, result.getConversationId());

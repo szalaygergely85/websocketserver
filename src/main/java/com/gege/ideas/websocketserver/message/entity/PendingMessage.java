@@ -4,12 +4,9 @@ import java.io.Serializable;
 
 public class PendingMessage implements Serializable {
 
-
    private Long pendingMessageId;
 
-
    private String uuid;
-
 
    private Long userId;
 
@@ -20,8 +17,6 @@ public class PendingMessage implements Serializable {
       this.userId = userId;
       this.delivered = delivered;
    }
-
-
 
    public PendingMessage() {}
 

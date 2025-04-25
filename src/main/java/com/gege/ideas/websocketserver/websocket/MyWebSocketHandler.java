@@ -2,8 +2,9 @@ package com.gege.ideas.websocketserver.websocket;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gege.ideas.websocketserver.DTO.ConversationDTO;
 import com.gege.ideas.websocketserver.conversation.entity.ConversationParticipant;
-import com.gege.ideas.websocketserver.conversation.service.ConversationParticipantsService;
+import com.gege.ideas.websocketserver.conversation.service.ConversationService;
 import com.gege.ideas.websocketserver.message.constans.MessageConstans;
 import com.gege.ideas.websocketserver.message.entity.Message;
 import com.gege.ideas.websocketserver.message.entity.PendingMessage;
@@ -41,13 +42,19 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
             messageAction.answeringToPing(session);
             break;
          case MessageConstans.MESSAGE:
-            Message messageLocal =  messageService.addMessage(messageAction.jsonToMessage(jsonNode), authToken);
+            Message messageLocal = messageService.addMessage(
+               messageAction.jsonToMessage(jsonNode),
+               authToken
+            );
 
+            ConversationDTO conversationDTO =
+               conversationService.getConversation(
+                  messageLocal.getConversationId(),
+                  authToken
+               );
 
             List<ConversationParticipant> conversationParticipants =
-               conversationParticipantsService.getParticipantsByConversationId(
-                  messageLocal.getConversationId()
-               );
+               conversationDTO.getParticipants();
 
             for (ConversationParticipant conversationParticipant : conversationParticipants) {
                if (
@@ -65,8 +72,10 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
                      pendingMessageService.addPendingMessage(
                         new PendingMessage(
                            messageLocal.getUuid(),
-                           conversationParticipant.getUserId(), false
-                        ), authToken
+                           conversationParticipant.getUserId(),
+                           false
+                        ),
+                        authToken
                      );
                      session.sendMessage(
                         new TextMessage("{\"error\": \"User not found\"}")
@@ -86,10 +95,10 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
       throws Exception {
       super.afterConnectionEstablished(session);
       Long userId = connectionAction.registerUser(sessionRegistry, session);
-      String  token = connectionAction.getAuthToken(session);
+      String token = connectionAction.getAuthToken(session);
       if (userId != null) {
          List<Message> messageList = messageAction.getNotDeliveredMessages(
-                 token
+            token
          );
          messageAction.sendMessages(messageList, session);
       } else {
@@ -103,7 +112,7 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
    private final SessionRegistry sessionRegistry = new SessionRegistry();
 
    @Autowired
-   private ConversationParticipantsService conversationParticipantsService;
+   private ConversationService conversationService;
 
    @Autowired
    private MessageService messageService;
