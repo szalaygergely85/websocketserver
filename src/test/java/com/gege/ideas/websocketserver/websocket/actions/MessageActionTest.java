@@ -61,9 +61,10 @@ public class MessageActionTest {
          "uuid-123"
       );
 
-         when(pendingMessageService.getNotDeliveredMessages("aaa"))
-            .thenReturn(List.of(msgToSend));
-      when(messageService.getMessageByUuid("uuid-123", "aaa")).thenReturn(message);
+      when(pendingMessageService.getNotDeliveredMessages("aaa"))
+         .thenReturn(List.of(msgToSend));
+      when(messageService.getMessageByUuid("uuid-123", "aaa"))
+         .thenReturn(message);
 
       // Call method
       List<Message> messages = messageAction.getNotDeliveredMessages("aaa");

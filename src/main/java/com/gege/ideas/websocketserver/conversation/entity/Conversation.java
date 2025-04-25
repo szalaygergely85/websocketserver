@@ -1,7 +1,5 @@
 package com.gege.ideas.websocketserver.conversation.entity;
 
-
-
 public class Conversation {
 
    private Long conversationId;

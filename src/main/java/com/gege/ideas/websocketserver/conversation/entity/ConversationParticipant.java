@@ -1,14 +1,10 @@
 package com.gege.ideas.websocketserver.conversation.entity;
 
-
 public class ConversationParticipant {
-
 
    private Long conversationParticipantId;
 
-
    private Long conversationId;
-
 
    private Long userId;
 
