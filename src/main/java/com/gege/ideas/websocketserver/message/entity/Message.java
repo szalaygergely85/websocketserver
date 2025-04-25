@@ -1,7 +1,6 @@
 package com.gege.ideas.websocketserver.message.entity;
 
 import java.io.Serializable;
-import javax.persistence.*;
 
 public class Message implements Serializable {
 

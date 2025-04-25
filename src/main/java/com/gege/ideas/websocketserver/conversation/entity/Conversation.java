@@ -1,13 +1,9 @@
 package com.gege.ideas.websocketserver.conversation.entity;
 
-import javax.persistence.*;
 
-@Entity
-@Table(name = "conversations")
+
 public class Conversation {
 
-   @Id
-   @GeneratedValue(strategy = GenerationType.IDENTITY)
    private Long conversationId;
 
    private String conversationName;

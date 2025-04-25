@@ -51,7 +51,7 @@ public class MessageActionTest {
    void testGetNotDeliveredMessages() {
       // Mock dependencies
       PendingMessage msgToSend = new PendingMessage();
-      msgToSend.setMessageId(1L);
+      msgToSend.setUuid("uuid-123");
       Message message = new Message(
          1L,
          2L,
@@ -61,9 +61,9 @@ public class MessageActionTest {
          "uuid-123"
       );
 
-      when(pendingMessageService.getNotDeliveredMessages("aaa"))
-         .thenReturn(List.of(msgToSend));
-      when(messageService.getMessageById(1L)).thenReturn(message);
+         when(pendingMessageService.getNotDeliveredMessages("aaa"))
+            .thenReturn(List.of(msgToSend));
+      when(messageService.getMessageByUuid("uuid-123", "aaa")).thenReturn(message);
 
       // Call method
       List<Message> messages = messageAction.getNotDeliveredMessages("aaa");
@@ -72,7 +72,7 @@ public class MessageActionTest {
       assertEquals(1, messages.size());
       assertEquals("uuid-123", messages.get(0).getUuid());
       verify(pendingMessageService).getNotDeliveredMessages("aaa");
-      verify(messageService).getMessageById(1L);
+      verify(messageService).getMessageByUuid("uuid-123", "aaa");
    }
 
    @Test
