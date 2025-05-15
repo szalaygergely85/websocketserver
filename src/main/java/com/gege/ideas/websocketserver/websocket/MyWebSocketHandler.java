@@ -77,9 +77,6 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
                         ),
                         authToken
                      );
-                     session.sendMessage(
-                        new TextMessage("{\"error\": \"User not found\"}")
-                     );
                   }
                }
             }
@@ -94,6 +91,11 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
    public void afterConnectionEstablished(WebSocketSession session)
       throws Exception {
       super.afterConnectionEstablished(session);
+
+      logger.info(
+         "User is connecting from: " + session.getLocalAddress()
+      );
+
       Long userId = connectionAction.registerUser(sessionRegistry, session);
       String token = connectionAction.getAuthToken(session);
       if (userId != null) {
@@ -102,6 +104,7 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
          );
          messageAction.sendMessages(messageList, session);
       } else {
+
          session.close();
       }
    }

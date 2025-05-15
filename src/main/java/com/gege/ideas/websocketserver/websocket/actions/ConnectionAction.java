@@ -1,5 +1,6 @@
 package com.gege.ideas.websocketserver.websocket.actions;
 
+import com.gege.ideas.websocketserver.message.constans.MessageConstans;
 import com.gege.ideas.websocketserver.user.service.UserService;
 import com.gege.ideas.websocketserver.websocket.SessionRegistry;
 import java.io.IOException;
@@ -8,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
+import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 @Component
@@ -35,12 +37,14 @@ public class ConnectionAction {
          );
          return userId;
       } else {
+         String errorMessage = "{\"type\": \" " + MessageConstans.ERROR + "\", \"error_type\": \" " + MessageConstans.ERROR_USER_NOT_FOUND + " \" }";
+         session.sendMessage(new TextMessage(errorMessage));
          session.close();
          return null;
       }
    }
 
-   public String getAuthToken(WebSocketSession session) {
+   public String getAuthToken(WebSocketSession session) throws IOException {
       session.getAttributes();
       HttpHeaders headers = session.getHandshakeHeaders();
       String token = null;
@@ -49,7 +53,10 @@ public class ConnectionAction {
       }
 
       if (token == null) {
-         // Handle the case where the token is missing
+
+         String errorMessage = "{\"type\": \" " + MessageConstans.ERROR + "\", \"error_type\": \" " + MessageConstans.ERROR_MISSING_AUTH_TOKEN + " \" }";
+         
+         session.sendMessage(new TextMessage(errorMessage));
          logger.error("Token is missing in the headers.");
 
          return null;

@@ -25,6 +25,9 @@ public class UserService {
 
    public Long getUserIdByToken(String token) {
       User user = getUserByToken(token);
-      return user.getUserId();
+      if (user!=null) {
+         return user.getUserId();
+      }
+      return null;
    }
 }
