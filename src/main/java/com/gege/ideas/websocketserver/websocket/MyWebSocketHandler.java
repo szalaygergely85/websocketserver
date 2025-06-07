@@ -42,6 +42,7 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
             messageAction.answeringToPing(session);
             break;
          case MessageConstans.MESSAGE:
+         case MessageConstans.IMAGE:
             Message messageLocal = messageService.addMessage(
                messageAction.jsonToMessage(jsonNode),
                authToken
