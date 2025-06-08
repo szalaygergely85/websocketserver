@@ -102,6 +102,8 @@ public class MessageAction {
          ? jsonNode.get("contentEncrypted").asText()
          : null;
 
+      int mType = jsonNode.has("type") ? jsonNode.get("type").asInt() : 0;
+
       logger.info(
          "Message from(userId): " +
          userIdString +
@@ -120,7 +122,7 @@ public class MessageAction {
          senderId,
          timestamp,
          contentEncrypted,
-         MessageConstans.MESSAGE,
+         mType,
          uuid
       );
    }
