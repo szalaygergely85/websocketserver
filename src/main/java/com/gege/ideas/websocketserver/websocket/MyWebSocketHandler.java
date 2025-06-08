@@ -93,9 +93,7 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
       throws Exception {
       super.afterConnectionEstablished(session);
 
-      logger.info(
-         "User is connecting from: " + session.getLocalAddress()
-      );
+      logger.info("User is connecting from: " + session.getLocalAddress());
 
       Long userId = connectionAction.registerUser(sessionRegistry, session);
       String token = connectionAction.getAuthToken(session);
@@ -105,7 +103,6 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
          );
          messageAction.sendMessages(messageList, session);
       } else {
-
          session.close();
       }
    }

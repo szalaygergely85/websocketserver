@@ -37,7 +37,12 @@ public class ConnectionAction {
          );
          return userId;
       } else {
-         String errorMessage = "{\"type\": \" " + MessageConstans.ERROR + "\", \"error_type\": \" " + MessageConstans.ERROR_USER_NOT_FOUND + " \" }";
+         String errorMessage =
+            "{\"type\": \" " +
+            MessageConstans.ERROR +
+            "\", \"error_type\": \" " +
+            MessageConstans.ERROR_USER_NOT_FOUND +
+            " \" }";
          session.sendMessage(new TextMessage(errorMessage));
          session.close();
          return null;
@@ -53,9 +58,13 @@ public class ConnectionAction {
       }
 
       if (token == null) {
+         String errorMessage =
+            "{\"type\": \" " +
+            MessageConstans.ERROR +
+            "\", \"error_type\": \" " +
+            MessageConstans.ERROR_MISSING_AUTH_TOKEN +
+            " \" }";
 
-         String errorMessage = "{\"type\": \" " + MessageConstans.ERROR + "\", \"error_type\": \" " + MessageConstans.ERROR_MISSING_AUTH_TOKEN + " \" }";
-         
          session.sendMessage(new TextMessage(errorMessage));
          logger.error("Token is missing in the headers.");
 
