@@ -3,12 +3,10 @@ package com.gege.ideas.websocketserver.websocket.actions;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.gege.ideas.websocketserver.message.constans.MessageConstans;
 import com.gege.ideas.websocketserver.message.entity.Message;
-import com.gege.ideas.websocketserver.message.entity.PendingMessage;
 import com.gege.ideas.websocketserver.message.service.MessageService;
 import com.gege.ideas.websocketserver.message.service.PendingMessageService;
 import com.gege.ideas.websocketserver.util.JsonUtil;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,18 +34,7 @@ public class MessageAction {
    }
 
    public List<Message> getNotDeliveredMessages(String token) {
-      List<PendingMessage> messagesNotDelivered =
-         pendingMessageService.getNotDeliveredMessages(token);
-      List<Message> messageList = new ArrayList<>();
-      for (PendingMessage pendingMessage : messagesNotDelivered) {
-         Message message = messageService.getMessageByUuid(
-            pendingMessage.getUuid(),
-            token
-         );
-         if (message != null) {
-            messageList.add(message);
-         }
-      }
+      List<Message> messageList = messageService.getNotDeliveredMessages(token);
       return messageList;
    }
 

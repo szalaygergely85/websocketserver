@@ -5,6 +5,7 @@ import com.gege.ideas.websocketserver.conversation.service.ConversationService;
 import com.gege.ideas.websocketserver.message.api.MessageApiClient;
 import com.gege.ideas.websocketserver.message.entity.Message;
 import com.gege.ideas.websocketserver.user.service.UserService;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -43,5 +44,9 @@ public class MessageService {
 
    public Message addMessage(Message messageLocal, String authToken) {
       return messageApiClient.addMessage(messageLocal, authToken);
+   }
+
+   public List<Message> getNotDeliveredMessages(String token) {
+      return messageApiClient.getNotDeliveredMessages(token);
    }
 }

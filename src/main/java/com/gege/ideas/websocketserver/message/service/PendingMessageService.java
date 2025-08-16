@@ -2,7 +2,6 @@ package com.gege.ideas.websocketserver.message.service;
 
 import com.gege.ideas.websocketserver.message.api.PendingMessageApiClient;
 import com.gege.ideas.websocketserver.message.entity.PendingMessage;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,10 +22,6 @@ public class PendingMessageService {
       String token
    ) {
       return pendingMessageApiClient.addMessage(pendingMessage, token);
-   }
-
-   public List<PendingMessage> getNotDeliveredMessages(String token) {
-      return pendingMessageApiClient.getNotDeliveredMessages(token);
    }
 
    public void markMessageAsDelivered(String uuid, String token) {

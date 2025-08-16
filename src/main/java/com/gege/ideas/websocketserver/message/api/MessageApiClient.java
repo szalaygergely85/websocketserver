@@ -5,6 +5,7 @@ import com.gege.ideas.websocketserver.config.ApiProperties;
 import com.gege.ideas.websocketserver.message.entity.Message;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
@@ -97,6 +98,33 @@ public class MessageApiClient {
       );
 
       return response.getBody();
+   }
+
+   public List<Message> getNotDeliveredMessages(String authToken) {
+      HttpHeaders headers = new HttpHeaders();
+      headers.setContentType(MediaType.APPLICATION_JSON);
+      headers.set("Authorization", authToken);
+
+      try {
+         HttpEntity<Void> request = new HttpEntity<>(headers);
+
+         ResponseEntity<List<Message>> response = restTemplate.exchange(
+            baseUrl + "/get-messages/not-delivered",
+            HttpMethod.GET,
+            request,
+            new ParameterizedTypeReference<List<Message>>() {}
+         );
+
+         return response.getBody();
+      } catch (HttpClientErrorException | HttpServerErrorException ex) {
+         System.err.println(
+            "Error: " +
+            ex.getStatusCode() +
+            " - " +
+            ex.getResponseBodyAsString()
+         );
+         throw ex;
+      }
    }
 
    public void delete(Message message, String authToken) {

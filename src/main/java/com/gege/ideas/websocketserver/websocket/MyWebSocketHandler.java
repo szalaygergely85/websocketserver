@@ -7,7 +7,6 @@ import com.gege.ideas.websocketserver.conversation.entity.ConversationParticipan
 import com.gege.ideas.websocketserver.conversation.service.ConversationService;
 import com.gege.ideas.websocketserver.message.constans.MessageConstans;
 import com.gege.ideas.websocketserver.message.entity.Message;
-import com.gege.ideas.websocketserver.message.entity.PendingMessage;
 import com.gege.ideas.websocketserver.message.service.MessageService;
 import com.gege.ideas.websocketserver.message.service.PendingMessageService;
 import com.gege.ideas.websocketserver.websocket.actions.ConnectionAction;
@@ -69,16 +68,16 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
                   if (sessionTo != null && sessionTo.isOpen()) {
                      System.out.println("Forwarding:" + message);
                      sessionTo.sendMessage(message);
-                  } else {
-                     pendingMessageService.addPendingMessage(
-                        new PendingMessage(
-                           messageLocal.getUuid(),
-                           conversationParticipant.getUserId(),
-                           false
-                        ),
-                        authToken
-                     );
-                  }
+                  }/* else {
+					pendingMessageService.addPendingMessage(
+						new PendingMessage(
+						messageLocal.getUuid(),
+						conversationParticipant.getUserId(),
+						false
+						),
+						authToken
+					);
+				}*/
                }
             }
             break;
