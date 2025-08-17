@@ -3,12 +3,14 @@ package com.gege.ideas.websocketserver.websocket;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gege.ideas.websocketserver.DTO.ConversationDTO;
+import com.gege.ideas.websocketserver.conversation.entity.Conversation;
 import com.gege.ideas.websocketserver.conversation.entity.ConversationParticipant;
 import com.gege.ideas.websocketserver.conversation.service.ConversationService;
 import com.gege.ideas.websocketserver.message.constans.MessageConstans;
 import com.gege.ideas.websocketserver.message.entity.Message;
 import com.gege.ideas.websocketserver.message.service.MessageService;
 import com.gege.ideas.websocketserver.message.service.PendingMessageService;
+import com.gege.ideas.websocketserver.notification.NotificationService;
 import com.gege.ideas.websocketserver.websocket.actions.ConnectionAction;
 import com.gege.ideas.websocketserver.websocket.actions.MessageAction;
 import java.util.List;
@@ -56,6 +58,7 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
             List<ConversationParticipant> conversationParticipants =
                conversationDTO.getParticipants();
 
+            Conversation conversation = conversationDTO.getConversation();
             for (ConversationParticipant conversationParticipant : conversationParticipants) {
                if (
                   conversationParticipant.getUserId() !=
@@ -68,7 +71,10 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
                   if (sessionTo != null && sessionTo.isOpen()) {
                      System.out.println("Forwarding:" + message);
                      sessionTo.sendMessage(message);
-                  }/* else {
+                  }
+                   else {
+                      notificationService.sendNotification(messageLocal.getContentEncrypted(), "message", conversationParticipant.getUserId(), conversation.getConversationName());
+                      /*
 					pendingMessageService.addPendingMessage(
 						new PendingMessage(
 						messageLocal.getUuid(),
@@ -76,8 +82,8 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
 						false
 						),
 						authToken
-					);
-				}*/
+					);*/
+				}
                }
             }
             break;
@@ -125,6 +131,9 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
 
    @Autowired
    private MessageAction messageAction;
+
+   @Autowired
+   private NotificationService notificationService;
 
    private String uuid;
    private String userIdString;
