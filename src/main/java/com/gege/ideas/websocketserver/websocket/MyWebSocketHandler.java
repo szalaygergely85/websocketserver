@@ -71,10 +71,14 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
                   if (sessionTo != null && sessionTo.isOpen()) {
                      System.out.println("Forwarding:" + message);
                      sessionTo.sendMessage(message);
-                  }
-                   else {
-                      notificationService.sendNotification(messageLocal.getContentEncrypted(), "message", conversationParticipant.getUserId(), conversation.getConversationName());
-                      /*
+                  } else {
+                     notificationService.sendNotification(
+                        messageLocal.getContentEncrypted(),
+                        "message",
+                        conversationParticipant.getUserId(),
+                        conversation.getConversationName()
+                     );
+                     /*
 					pendingMessageService.addPendingMessage(
 						new PendingMessage(
 						messageLocal.getUuid(),
@@ -83,7 +87,7 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
 						),
 						authToken
 					);*/
-				}
+                  }
                }
             }
             break;
