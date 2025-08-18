@@ -72,12 +72,6 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
                      System.out.println("Forwarding:" + message);
                      sessionTo.sendMessage(message);
                   } else {
-                     notificationService.sendNotification(
-                        messageLocal.getContentEncrypted(),
-                        "message",
-                        conversationParticipant.getUserId(),
-                        conversation.getConversationName()
-                     );
                      /*
 					pendingMessageService.addPendingMessage(
 						new PendingMessage(
