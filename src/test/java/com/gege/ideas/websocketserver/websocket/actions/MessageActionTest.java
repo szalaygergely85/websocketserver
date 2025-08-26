@@ -94,7 +94,7 @@ public class MessageActionTest {
          		\"conversationId\": \"2\",
          		\"uuid\": \"abc-123\",
          		\"timestamp\": \"1700000000\",
-         		\"contentEncrypted\": \"encryptedContent\"
+         		\"content\": \"encryptedContent\"
          	}
          """;
       JsonNode jsonNode = objectMapper.readTree(json);

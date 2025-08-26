@@ -12,11 +12,21 @@ public class Message implements Serializable {
 
    private long timestamp;
 
-   private String contentEncrypted;
+   private String content;
+
+   private boolean enrypted;
 
    private int type;
 
    private String uuid;
+
+   public boolean getEncrypted() {
+      return enrypted;
+   }
+
+   public void setEncrypted(boolean encrypted) {
+      enrypted = encrypted;
+   }
 
    public Long getMessageId() {
       return messageId;
@@ -51,11 +61,11 @@ public class Message implements Serializable {
    }
 
    public String getContentEncrypted() {
-      return contentEncrypted;
+      return content;
    }
 
    public void setContentEncrypted(String content) {
-      this.contentEncrypted = content;
+      this.content = content;
    }
 
    public int getType() {
@@ -80,15 +90,16 @@ public class Message implements Serializable {
       long conversationId,
       long senderId,
       long timestamp,
-      String contentEncrypted,
+      String content,
+      boolean enrypted,
       int type,
       String uuid
    ) {
       this.conversationId = conversationId;
       this.senderId = senderId;
       this.timestamp = timestamp;
-      this.contentEncrypted = contentEncrypted;
-
+      this.content = content;
+this.enrypted = enrypted;
       this.type = type;
 
       this.uuid = uuid;

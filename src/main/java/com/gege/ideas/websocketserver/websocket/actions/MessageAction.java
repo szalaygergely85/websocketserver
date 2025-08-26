@@ -85,9 +85,12 @@ public class MessageAction {
       String timestampString = jsonNode.has("timestamp")
          ? jsonNode.get("timestamp").asText()
          : null;
-      String contentEncrypted = jsonNode.has("contentEncrypted")
-         ? jsonNode.get("contentEncrypted").asText()
+      String content = jsonNode.has("content")
+         ? jsonNode.get("content").asText()
          : null;
+
+      boolean encrypted =
+              jsonNode.get("encrypted").asBoolean(false);
 
       int mType = jsonNode.has("type") ? jsonNode.get("type").asInt() : 0;
 
@@ -108,7 +111,8 @@ public class MessageAction {
          conversationId,
          senderId,
          timestamp,
-         contentEncrypted,
+         content,
+              encrypted,
          mType,
          uuid
       );
