@@ -89,8 +89,7 @@ public class MessageAction {
          ? jsonNode.get("content").asText()
          : null;
 
-      boolean encrypted =
-              jsonNode.get("encrypted").asBoolean(false);
+      boolean encrypted = jsonNode.get("encrypted").asBoolean(false);
 
       int mType = jsonNode.has("type") ? jsonNode.get("type").asInt() : 0;
 
