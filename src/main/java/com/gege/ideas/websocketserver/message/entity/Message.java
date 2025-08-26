@@ -99,7 +99,7 @@ public class Message implements Serializable {
       this.senderId = senderId;
       this.timestamp = timestamp;
       this.content = content;
-this.enrypted = enrypted;
+      this.enrypted = enrypted;
       this.type = type;
 
       this.uuid = uuid;

@@ -112,7 +112,7 @@ public class MessageAction {
          senderId,
          timestamp,
          content,
-              encrypted,
+         encrypted,
          mType,
          uuid
       );
