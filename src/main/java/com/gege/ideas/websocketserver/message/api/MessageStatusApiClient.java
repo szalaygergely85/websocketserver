@@ -11,20 +11,20 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 @Component
-public class PendingMessageApiClient {
+public class MessageStatusApiClient {
 
    private final RestTemplate restTemplate;
    private final String baseUrl;
    private final SystemAuthTokenProvider authTokenProvider;
 
    @Autowired
-   public PendingMessageApiClient(
+   public MessageStatusApiClient(
       RestTemplate restTemplate,
       SystemAuthTokenProvider authTokenProvider,
       ApiProperties apiProperties
    ) {
       this.restTemplate = restTemplate;
-      this.baseUrl = apiProperties.getBaseUrl() + "/pending-message";
+      this.baseUrl = apiProperties.getBaseUrl() + "/message-status";
       this.authTokenProvider = authTokenProvider;
    }
 
@@ -42,7 +42,7 @@ public class PendingMessageApiClient {
          );
 
          ResponseEntity<PendingMessage> response = restTemplate.postForEntity(
-            baseUrl + "/add-message",
+            baseUrl + "/add",
             request,
             PendingMessage.class
          );
@@ -77,6 +77,30 @@ public class PendingMessageApiClient {
             ex.getStatusCode() +
             " - " +
             ex.getResponseBodyAsString()
+         );
+         throw ex;
+      }
+      // Optional: handle response.getStatusCode() if needed
+   }
+
+   public void markAsRead(String uuid, String authToken) {
+      HttpHeaders headers = new HttpHeaders();
+      headers.set("Authorization", authToken); // No need for Content-Type in GET
+
+      HttpEntity<Void> request = new HttpEntity<>(headers);
+      try {
+         ResponseEntity<Void> response = restTemplate.exchange(
+                 baseUrl + "/" + uuid + "/read",
+                 HttpMethod.POST,
+                 request,
+                 Void.class
+         );
+      } catch (HttpClientErrorException | HttpServerErrorException ex) {
+         System.err.println(
+                 "Error: " +
+                         ex.getStatusCode() +
+                         " - " +
+                         ex.getResponseBodyAsString()
          );
          throw ex;
       }

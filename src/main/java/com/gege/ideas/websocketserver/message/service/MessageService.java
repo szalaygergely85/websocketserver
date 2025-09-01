@@ -42,8 +42,8 @@ public class MessageService {
       return messageApiClient.getMessage(uuid, token);
    }
 
-   public Message addMessage(Message messageLocal, String authToken) {
-      return messageApiClient.addMessage(messageLocal, authToken);
+   public Message addMessage(Message message, String authToken) {
+      return messageApiClient.addMessage(message, authToken);
    }
 
    public List<Message> getNotDeliveredMessages(String token) {

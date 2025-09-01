@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.gege.ideas.websocketserver.message.constans.MessageConstans;
 import com.gege.ideas.websocketserver.message.entity.Message;
 import com.gege.ideas.websocketserver.message.service.MessageService;
-import com.gege.ideas.websocketserver.message.service.PendingMessageService;
+import com.gege.ideas.websocketserver.message.service.MessageStatusService;
 import com.gege.ideas.websocketserver.util.JsonUtil;
 import java.io.IOException;
 import java.util.List;
@@ -21,15 +21,15 @@ public class MessageAction {
    private static final Logger logger = LoggerFactory.getLogger(
       MessageAction.class
    );
-   private PendingMessageService pendingMessageService;
+   private MessageStatusService messageStatusService;
    private MessageService messageService;
 
    @Autowired
    public MessageAction(
-      PendingMessageService pendingMessageService,
+      MessageStatusService messageStatusService,
       MessageService messageService
    ) {
-      this.pendingMessageService = pendingMessageService;
+      this.messageStatusService = messageStatusService;
       this.messageService = messageService;
    }
 
@@ -44,7 +44,7 @@ public class MessageAction {
    ) throws IOException {
       for (Message message : messageList) {
          try {
-            String messageJson = JsonUtil.toJson(message);
+            String messageJson = JsonUtil.objectToJson(message);
             session.sendMessage(new TextMessage(messageJson));
          } catch (IOException e) {
             // Log the error or handle it appropriately
@@ -62,7 +62,7 @@ public class MessageAction {
       Long userId = Long.parseLong(userIdString);
       logger.info("Message from(userId): " + userIdString + ", uuid: " + uuid);
 
-      pendingMessageService.markMessageAsDelivered(uuid, token);
+      messageStatusService.markMessageAsDelivered(uuid, token);
    }
 
    public void answeringToPing(WebSocketSession session) throws IOException {
@@ -74,46 +74,5 @@ public class MessageAction {
       }
    }
 
-   public Message jsonToMessage(JsonNode jsonNode) {
-      String userIdString = jsonNode.has("senderId")
-         ? jsonNode.get("senderId").asText()
-         : null;
-      String conversation = jsonNode.has("conversationId")
-         ? jsonNode.get("conversationId").asText()
-         : null;
-      String uuid = jsonNode.has("uuid") ? jsonNode.get("uuid").asText() : null;
-      String timestampString = jsonNode.has("timestamp")
-         ? jsonNode.get("timestamp").asText()
-         : null;
-      String content = jsonNode.has("content")
-         ? jsonNode.get("content").asText()
-         : null;
 
-      boolean encrypted = jsonNode.get("encrypted").asBoolean(false);
-
-      int mType = jsonNode.has("type") ? jsonNode.get("type").asInt() : 0;
-
-      logger.info(
-         "Message from(userId): " +
-         userIdString +
-         " Conversation: " +
-         conversation +
-         ", uuid: " +
-         uuid
-      );
-
-      Long conversationId = Long.parseLong(conversation);
-      Long senderId = Long.parseLong(userIdString);
-      Long timestamp = Long.parseLong(timestampString);
-
-      return new Message(
-         conversationId,
-         senderId,
-         timestamp,
-         content,
-         encrypted,
-         mType,
-         uuid
-      );
-   }
 }

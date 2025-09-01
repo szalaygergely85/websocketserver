@@ -2,18 +2,15 @@ package com.gege.ideas.websocketserver.websocket;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gege.ideas.websocketserver.DTO.ConversationDTO;
-import com.gege.ideas.websocketserver.conversation.entity.Conversation;
-import com.gege.ideas.websocketserver.conversation.entity.ConversationParticipant;
 import com.gege.ideas.websocketserver.conversation.service.ConversationService;
 import com.gege.ideas.websocketserver.message.constans.MessageConstans;
 import com.gege.ideas.websocketserver.message.entity.Message;
 import com.gege.ideas.websocketserver.message.service.MessageService;
-import com.gege.ideas.websocketserver.message.service.PendingMessageService;
-import com.gege.ideas.websocketserver.notification.NotificationService;
-import com.gege.ideas.websocketserver.websocket.actions.ConnectionAction;
-import com.gege.ideas.websocketserver.websocket.actions.MessageAction;
+import com.gege.ideas.websocketserver.message.service.MessageStatusService;
+import com.gege.ideas.websocketserver.websocket.actions.*;
+
 import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,71 +32,30 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
 
       int type = jsonNode.get("type").asInt();
 
-      switch (type) {
-         case MessageConstans.ARRIVAL_CONFIRMATION:
-            messageAction.setMessageArrived(jsonNode, authToken);
-            break;
-         case MessageConstans.PING:
-            messageAction.answeringToPing(session);
-            break;
-         case MessageConstans.MESSAGE:
-         case MessageConstans.IMAGE:
-            Message messageLocal = messageService.addMessage(
-               messageAction.jsonToMessage(jsonNode),
-               authToken
-            );
+      ActionService service = switch (type) {
 
-            ConversationDTO conversationDTO =
-               conversationService.getConversation(
-                  messageLocal.getConversationId(),
-                  authToken
-               );
+         case MessageConstans.READ_CONFIRMATION -> new ReadMessageAction(session, messageStatusService, authToken, sessionRegistry);
+         case MessageConstans.ARRIVAL_CONFIRMATION -> new DeliveryMessageAction(session, messageStatusService, authToken, sessionRegistry);
+         case MessageConstans.PING -> new PingActionService(session, sessionRegistry);
+         case MessageConstans.MESSAGE, MessageConstans.IMAGE -> new MediaMessageAction(session, conversationService, messageService,authToken, sessionRegistry);
+         default -> null;
+      };
 
-            List<ConversationParticipant> conversationParticipants =
-               conversationDTO.getParticipants();
-
-            Conversation conversation = conversationDTO.getConversation();
-            for (ConversationParticipant conversationParticipant : conversationParticipants) {
-               if (
-                  conversationParticipant.getUserId() !=
-                  messageLocal.getSenderId()
-               ) {
-                  WebSocketSession sessionTo = sessionRegistry.getSession(
-                     conversationParticipant.getUserId().toString()
-                  );
-
-                  if (sessionTo != null && sessionTo.isOpen()) {
-                     System.out.println("Forwarding:" + message);
-                     sessionTo.sendMessage(message);
-                  } else {
-                     /*
-					pendingMessageService.addPendingMessage(
-						new PendingMessage(
-						messageLocal.getUuid(),
-						conversationParticipant.getUserId(),
-						false
-						),
-						authToken
-					);*/
-                  }
-               }
-            }
-            break;
-         default:
-            System.out.println("Unknown message type: " + type);
-            break;
+      if (service != null) {
+         service.handleMessage(jsonNode);
       }
    }
-
    @Override
    public void afterConnectionEstablished(WebSocketSession session)
       throws Exception {
       super.afterConnectionEstablished(session);
 
-      logger.info("User is connecting from: " + session.getLocalAddress());
+
 
       Long userId = connectionAction.registerUser(sessionRegistry, session);
       String token = connectionAction.getAuthToken(session);
+
+      logger.info("User {} is connected with {}.", userId, token);
       if (userId != null) {
          List<Message> messageList = messageAction.getNotDeliveredMessages(
             token
@@ -122,7 +78,7 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
    private MessageService messageService;
 
    @Autowired
-   private PendingMessageService pendingMessageService;
+   private MessageStatusService messageStatusService;
 
    @Autowired
    private ConnectionAction connectionAction;
@@ -130,9 +86,4 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
    @Autowired
    private MessageAction messageAction;
 
-   @Autowired
-   private NotificationService notificationService;
-
-   private String uuid;
-   private String userIdString;
 }

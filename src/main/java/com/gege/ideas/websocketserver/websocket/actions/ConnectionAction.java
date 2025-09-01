@@ -33,8 +33,7 @@ public class ConnectionAction {
       if (userId != null) {
          sessionRegistry.registerSession(userId.toString(), session);
          logger.info(
-            "User connected: " + userId + ": " + session.getLocalAddress()
-         );
+            "User connected: " + userId);
          return userId;
       } else {
          String errorMessage =
