@@ -6,13 +6,14 @@ import com.gege.ideas.websocketserver.util.JsonUtil;
 import com.gege.ideas.websocketserver.websocket.SessionRegistry;
 import org.springframework.web.socket.WebSocketSession;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 
 public class PingActionService extends ActionService{
 
-    public PingActionService(WebSocketSession session, SessionRegistry sessionRegistry) {
+    public PingActionService(WebSocketSession session, SessionRegistry sessionRegistry) throws IOException {
         super(session, sessionRegistry);
     }
 
@@ -21,7 +22,7 @@ public class PingActionService extends ActionService{
         Map<String, Object> message = new HashMap<>();
         message.put("type", MessageConstans.PING);
 
-        sendMessageBack(JsonUtil.mapToJsonString(message));
+        sendMessageToSession(JsonUtil.mapToJsonString(message));
 
     }
 }

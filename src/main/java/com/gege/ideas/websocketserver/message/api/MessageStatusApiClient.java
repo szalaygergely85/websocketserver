@@ -2,13 +2,17 @@ package com.gege.ideas.websocketserver.message.api;
 
 import com.gege.ideas.websocketserver.auth.SystemAuthTokenProvider;
 import com.gege.ideas.websocketserver.config.ApiProperties;
-import com.gege.ideas.websocketserver.message.entity.PendingMessage;
+import com.gege.ideas.websocketserver.message.entity.Message;
+import com.gege.ideas.websocketserver.message.entity.MessageStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
 
 @Component
 public class MessageStatusApiClient {
@@ -28,23 +32,23 @@ public class MessageStatusApiClient {
       this.authTokenProvider = authTokenProvider;
    }
 
-   public PendingMessage addMessage(
-      PendingMessage pendingMessage,
+   public MessageStatus addMessage(
+      MessageStatus messageStatus,
       String authToken
    ) {
       HttpHeaders headers = new HttpHeaders();
       headers.setContentType(MediaType.APPLICATION_JSON);
       headers.set("Authorization", authToken);
       try {
-         HttpEntity<PendingMessage> request = new HttpEntity<>(
-            pendingMessage,
+         HttpEntity<MessageStatus> request = new HttpEntity<>(
+                 messageStatus,
             headers
          );
 
-         ResponseEntity<PendingMessage> response = restTemplate.postForEntity(
+         ResponseEntity<MessageStatus> response = restTemplate.postForEntity(
             baseUrl + "/add",
             request,
-            PendingMessage.class
+            MessageStatus.class
          );
 
          return response.getBody();
@@ -105,5 +109,33 @@ public class MessageStatusApiClient {
          throw ex;
       }
       // Optional: handle response.getStatusCode() if needed
+   }
+
+
+   public List<MessageStatus> getNotDeliveredMessageStatus(String authToken) {
+      HttpHeaders headers = new HttpHeaders();
+      headers.setContentType(MediaType.APPLICATION_JSON);
+      headers.set("Authorization", authToken);
+
+      try {
+         HttpEntity<Void> request = new HttpEntity<>(headers);
+
+         ResponseEntity<List<MessageStatus>> response = restTemplate.exchange(
+                 baseUrl + "/get-messages-status/not-delivered",
+                 HttpMethod.GET,
+                 request,
+                 new ParameterizedTypeReference<List<MessageStatus>>() {}
+         );
+
+         return response.getBody();
+      } catch (HttpClientErrorException | HttpServerErrorException ex) {
+         System.err.println(
+                 "Error: " +
+                         ex.getStatusCode() +
+                         " - " +
+                         ex.getResponseBodyAsString()
+         );
+         throw ex;
+      }
    }
 }

@@ -1,5 +1,6 @@
 package com.gege.ideas.websocketserver.message.service;
 
+import com.gege.ideas.websocketserver.DTO.MessageDTO;
 import com.gege.ideas.websocketserver.conversation.service.ConversationParticipantsService;
 import com.gege.ideas.websocketserver.conversation.service.ConversationService;
 import com.gege.ideas.websocketserver.message.api.MessageApiClient;

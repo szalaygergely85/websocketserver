@@ -1,9 +1,16 @@
 package com.gege.ideas.websocketserver.websocket.actions;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.gege.ideas.websocketserver.message.constans.MessageConstans;
+import com.gege.ideas.websocketserver.message.entity.Message;
+import com.gege.ideas.websocketserver.message.entity.MessageStatus;
+import com.gege.ideas.websocketserver.message.service.MessageService;
+import com.gege.ideas.websocketserver.message.service.MessageStatusService;
 import com.gege.ideas.websocketserver.user.service.UserService;
 import com.gege.ideas.websocketserver.websocket.SessionRegistry;
 import java.io.IOException;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,28 +19,34 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
-@Component
-public class ConnectionAction {
 
-   private static final Logger logger = LoggerFactory.getLogger(
-      "com.websocket.connection"
-   );
+public class ConnectionAction extends ActionService{
+
    private UserService userService;
+   private MessageService messageService;
+   private MessageStatusService messageStatusService;
 
-   @Autowired
-   public ConnectionAction(UserService userService) {
+
+   public ConnectionAction(WebSocketSession session, SessionRegistry sessionRegistry, UserService userService, MessageService messageService, MessageStatusService messageStatusService) throws IOException {
+      super(session, sessionRegistry);
+
       this.userService = userService;
+      this.messageService = messageService;
+      this.messageStatusService = messageStatusService;
+   }
+
+   @Override
+   public void handleMessage(JsonNode jsonNode) throws Exception {
+
    }
 
    public Long registerUser(
-      SessionRegistry sessionRegistry,
-      WebSocketSession session
    ) throws IOException {
-      Long userId = _getUserIdFromSession(session);
+      Long userId = _getUserIdFromSession();
       if (userId != null) {
          sessionRegistry.registerSession(userId.toString(), session);
-         logger.info(
-            "User connected: " + userId);
+         logger.info("User {} is connected ", userId);
+         _getNotDeliveredMessages(userId);
          return userId;
       } else {
          String errorMessage =
@@ -48,33 +61,23 @@ public class ConnectionAction {
       }
    }
 
-   public String getAuthToken(WebSocketSession session) throws IOException {
-      session.getAttributes();
-      HttpHeaders headers = session.getHandshakeHeaders();
-      String token = null;
-      if (headers.containsKey("token") && headers.get("token") != null) {
-         token = headers.getFirst("token");
+   private void _getNotDeliveredMessages(Long userId) throws IOException {
+      if (userId != null) {
+         List<Message> messageList = messageService.getNotDeliveredMessages(authToken);
+         logger.info(userId + " not delivered Message count: " + messageList.size());
+         sendMessagesToSession(messageList, session);
+         List<MessageStatus> messageStatusList = messageStatusService.getNotDeliveredMessages(authToken);
+         logger.info(userId + " not delivered Message Status count: " + messageStatusList.size());
+
+      } else {
+         session.close();
       }
-
-      if (token == null) {
-         String errorMessage =
-            "{\"type\": \" " +
-            MessageConstans.ERROR +
-            "\", \"error_type\": \" " +
-            MessageConstans.ERROR_MISSING_AUTH_TOKEN +
-            " \" }";
-
-         session.sendMessage(new TextMessage(errorMessage));
-         logger.error("Token is missing in the headers.");
-
-         return null;
-      }
-      return token;
    }
 
-   private Long _getUserIdFromSession(WebSocketSession session)
+
+   private Long _getUserIdFromSession()
       throws IOException {
-      String token = getAuthToken(session);
+      String token = getAuthToken();
 
       return userService.getUserIdByToken(token);
    }

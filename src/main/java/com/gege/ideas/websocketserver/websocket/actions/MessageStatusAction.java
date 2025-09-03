@@ -3,20 +3,21 @@ package com.gege.ideas.websocketserver.websocket.actions;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.gege.ideas.websocketserver.message.constans.MessageConstans;
 import com.gege.ideas.websocketserver.message.service.MessageStatusService;
+import com.gege.ideas.websocketserver.message.service.MessageStatusType;
 import com.gege.ideas.websocketserver.util.JsonUtil;
 import com.gege.ideas.websocketserver.websocket.SessionRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.socket.WebSocketSession;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ReadMessageAction extends ActionService {
-    public ReadMessageAction(WebSocketSession session, MessageStatusService messageStatusService, String token, SessionRegistry sessionRegistry) {
+public class MessageStatusAction extends ActionService {
+    public MessageStatusAction(WebSocketSession session, MessageStatusService messageStatusService, SessionRegistry sessionRegistry) throws IOException {
         super(session,sessionRegistry);
 
-        this.token= token;
         this.messageStatusService = messageStatusService;
     }
 
@@ -27,23 +28,27 @@ public class ReadMessageAction extends ActionService {
                 ? jsonNode.get("userId").asText()
                 : null;
         Long userId = Long.parseLong(userIdString);
+        String messageStatusTypeString = jsonNode.has("messages_status")
+                ? jsonNode.get("messages_status").asText()
+                : null;
 
         logger.info("Message from read by: " + userIdString + ", uuid: " + uuid);
 
 
         Map<String, Object> message = new HashMap<>();
-        message.put("type", MessageConstans.READ_CONFIRMATION);
+        message.put("type", MessageConstans.MESSAGE_STATUS);
+        message.put("messages_status", messageStatusTypeString);
         message.put("uuid", uuid);
         message.put("userId", userId);
 
         sendMessageToUser(JsonUtil.mapToJsonString(message), userId);
-        messageStatusService.markMessageAsRead(uuid, token);
+        messageStatusService.markMessageAsRead(uuid, authToken);
     }
 
     private static final Logger logger = LoggerFactory.getLogger(
-            ReadMessageAction.class
+            MessageStatusAction.class
     );
     private final MessageStatusService messageStatusService;
 
-    private final String token;
+
 }

@@ -33,26 +33,9 @@ public class MessageAction {
       this.messageService = messageService;
    }
 
-   public List<Message> getNotDeliveredMessages(String token) {
-      List<Message> messageList = messageService.getNotDeliveredMessages(token);
-      return messageList;
-   }
 
-   public void sendMessages(
-      List<Message> messageList,
-      WebSocketSession session
-   ) throws IOException {
-      for (Message message : messageList) {
-         try {
-            String messageJson = JsonUtil.objectToJson(message);
-            session.sendMessage(new TextMessage(messageJson));
-         } catch (IOException e) {
-            // Log the error or handle it appropriately
-            System.err.println("Error sending message: " + e.getMessage());
-            throw e; // Rethrow if necessary, or handle gracefully
-         }
-      }
-   }
+
+
 
    public void setMessageArrived(JsonNode jsonNode, String token) {
       String uuid = jsonNode.has("uuid") ? jsonNode.get("uuid").asText() : null;

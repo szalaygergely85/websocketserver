@@ -11,6 +11,7 @@ import com.gege.ideas.websocketserver.util.JsonUtil;
 import com.gege.ideas.websocketserver.websocket.SessionRegistry;
 import org.springframework.web.socket.WebSocketSession;
 
+import java.io.IOException;
 import java.util.List;
 
 public class MediaMessageAction extends ActionService {
@@ -18,10 +19,10 @@ public class MediaMessageAction extends ActionService {
     private final MessageService messageService;
     private final ConversationService conversationService;
 
-    public MediaMessageAction(WebSocketSession session,ConversationService conversationService, MessageService messageService, String authToken, SessionRegistry sessionRegistry) {
+    public MediaMessageAction(WebSocketSession session,ConversationService conversationService, MessageService messageService, SessionRegistry sessionRegistry) throws IOException {
         super(session, sessionRegistry);
         this.messageService = messageService;
-        this.authToken = authToken;
+
         this.conversationService = conversationService;
     }
 
@@ -53,5 +54,5 @@ public class MediaMessageAction extends ActionService {
         }
     }
 
-    private final String authToken;
+
 }

@@ -4,12 +4,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gege.ideas.websocketserver.conversation.service.ConversationService;
 import com.gege.ideas.websocketserver.message.constans.MessageConstans;
-import com.gege.ideas.websocketserver.message.entity.Message;
 import com.gege.ideas.websocketserver.message.service.MessageService;
 import com.gege.ideas.websocketserver.message.service.MessageStatusService;
+import com.gege.ideas.websocketserver.user.service.UserService;
 import com.gege.ideas.websocketserver.websocket.actions.*;
-
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,10 +21,9 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
    @Override
    public void handleTextMessage(WebSocketSession session, TextMessage message)
       throws Exception {
-      String authToken = connectionAction.getAuthToken(session);
 
       String payload = message.getPayload();
-      System.out.println(payload);
+      logger.info("Payload arrived "+ payload);
       ObjectMapper objectMapper = new ObjectMapper();
       JsonNode jsonNode = objectMapper.readTree(payload);
 
@@ -34,10 +31,10 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
 
       ActionService service = switch (type) {
 
-         case MessageConstans.READ_CONFIRMATION -> new ReadMessageAction(session, messageStatusService, authToken, sessionRegistry);
-         case MessageConstans.ARRIVAL_CONFIRMATION -> new DeliveryMessageAction(session, messageStatusService, authToken, sessionRegistry);
+         case MessageConstans.READ_CONFIRMATION -> new MessageStatusAction(session, messageStatusService, sessionRegistry);
+         case MessageConstans.ARRIVAL_CONFIRMATION -> new DeliveryMessageAction(session, messageStatusService, sessionRegistry);
          case MessageConstans.PING -> new PingActionService(session, sessionRegistry);
-         case MessageConstans.MESSAGE, MessageConstans.IMAGE -> new MediaMessageAction(session, conversationService, messageService,authToken, sessionRegistry);
+         case MessageConstans.MESSAGE, MessageConstans.IMAGE -> new MediaMessageAction(session, conversationService, messageService, sessionRegistry);
          default -> null;
       };
 
@@ -50,20 +47,9 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
       throws Exception {
       super.afterConnectionEstablished(session);
 
+      ConnectionAction connectionAction = new ConnectionAction(session, sessionRegistry, userService, messageService, messageStatusService);
+       connectionAction.registerUser();
 
-
-      Long userId = connectionAction.registerUser(sessionRegistry, session);
-      String token = connectionAction.getAuthToken(session);
-
-      logger.info("User {} is connected with {}.", userId, token);
-      if (userId != null) {
-         List<Message> messageList = messageAction.getNotDeliveredMessages(
-            token
-         );
-         messageAction.sendMessages(messageList, session);
-      } else {
-         session.close();
-      }
    }
 
    private static final Logger logger = LoggerFactory.getLogger(
@@ -81,9 +67,12 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
    private MessageStatusService messageStatusService;
 
    @Autowired
-   private ConnectionAction connectionAction;
+   private UserService userService;
 
    @Autowired
    private MessageAction messageAction;
+
+
+
 
 }

@@ -1,9 +1,12 @@
 package com.gege.ideas.websocketserver.message.service;
 
 import com.gege.ideas.websocketserver.message.api.MessageStatusApiClient;
-import com.gege.ideas.websocketserver.message.entity.PendingMessage;
+import com.gege.ideas.websocketserver.message.entity.Message;
+import com.gege.ideas.websocketserver.message.entity.MessageStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class MessageStatusService {
@@ -17,11 +20,11 @@ public class MessageStatusService {
       this.messageStatusApiClient = messageStatusApiClient;
    }
 
-   public PendingMessage addPendingMessage(
-      PendingMessage pendingMessage,
+   public MessageStatus addPendingMessage(
+      MessageStatus messageStatus,
       String token
    ) {
-      return messageStatusApiClient.addMessage(pendingMessage, token);
+      return messageStatusApiClient.addMessage(messageStatus, token);
    }
 
    public void markMessageAsDelivered(String uuid, String token) {
@@ -33,4 +36,9 @@ public class MessageStatusService {
       // Fetch the message by its ID
       messageStatusApiClient.markAsRead(uuid, token);
    }
+
+   public List<MessageStatus> getNotDeliveredMessages(String token) {
+      return messageStatusApiClient.getNotDeliveredMessageStatus(token);
+   }
+
 }

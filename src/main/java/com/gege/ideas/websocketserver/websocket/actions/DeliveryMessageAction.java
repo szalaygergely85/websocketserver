@@ -7,14 +7,15 @@ import com.gege.ideas.websocketserver.util.JsonUtil;
 import com.gege.ideas.websocketserver.websocket.SessionRegistry;
 import org.springframework.web.socket.WebSocketSession;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 public class DeliveryMessageAction extends ActionService {
-    public DeliveryMessageAction(WebSocketSession session, MessageStatusService messageStatusService, String authToken, SessionRegistry sessionRegistry) {
+    public DeliveryMessageAction(WebSocketSession session, MessageStatusService messageStatusService,  SessionRegistry sessionRegistry) throws IOException {
         super(session, sessionRegistry);
 
-        this.authToken = authToken;
+
         this.messageStatusService = messageStatusService;
     }
 
@@ -39,5 +40,5 @@ public class DeliveryMessageAction extends ActionService {
     }
     private final MessageStatusService messageStatusService;
 
-    private final String authToken;
+
 }
