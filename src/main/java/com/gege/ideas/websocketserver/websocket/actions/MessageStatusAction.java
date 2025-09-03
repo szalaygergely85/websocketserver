@@ -1,6 +1,8 @@
 package com.gege.ideas.websocketserver.websocket.actions;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gege.ideas.websocketserver.message.constans.MessageConstans;
 import com.gege.ideas.websocketserver.message.service.MessageStatusService;
 import com.gege.ideas.websocketserver.message.service.MessageStatusType;
@@ -24,24 +26,38 @@ public class MessageStatusAction extends ActionService {
     @Override
     public void handleMessage(JsonNode jsonNode) throws Exception {
         String uuid = jsonNode.has("uuid") ? jsonNode.get("uuid").asText() : null;
-        String userIdString = jsonNode.has("userId")
-                ? jsonNode.get("userId").asText()
-                : null;
-        Long userId = Long.parseLong(userIdString);
-        String messageStatusTypeString = jsonNode.has("messages_status")
-                ? jsonNode.get("messages_status").asText()
-                : null;
 
-        logger.info("Message from read by: " + userIdString + ", uuid: " + uuid);
+        ObjectMapper mapper = new ObjectMapper();
+
+        Map<Long, MessageStatusType> userStatuses = mapper.convertValue(
+                jsonNode.get("userStatuses"),
+                new TypeReference<Map<Long, MessageStatusType>>() {}
+        );
+
+        Map<Long, Boolean> deliveredStatuses = mapper.convertValue(
+                jsonNode.get("deliveredStatuses"),
+                new TypeReference<Map<Long, Boolean>>() {}
+        );
+
+        logger.info("Message from read by: " + userStatuses.toString() + ", uuid: " + uuid);
 
 
         Map<String, Object> message = new HashMap<>();
         message.put("type", MessageConstans.MESSAGE_STATUS);
-        message.put("messages_status", messageStatusTypeString);
+        message.put("userStatuses", userStatuses);
         message.put("uuid", uuid);
-        message.put("userId", userId);
+        message.put("deliveredStatuses", deliveredStatuses);
 
-        sendMessageToUser(JsonUtil.mapToJsonString(message), userId);
+        for (Map.Entry<Long, Boolean> entry : deliveredStatuses.entrySet()) {
+
+            Long userId = entry.getKey();
+            boolean delivered = entry.getValue();
+            if(!delivered) {
+                sendMessageToUser(JsonUtil.mapToJsonString(message), userId);
+            }
+
+        }
+
         messageStatusService.markMessageAsRead(uuid, authToken);
     }
 

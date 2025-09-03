@@ -31,8 +31,7 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
 
       ActionService service = switch (type) {
 
-         case MessageConstans.READ_CONFIRMATION -> new MessageStatusAction(session, messageStatusService, sessionRegistry);
-         case MessageConstans.ARRIVAL_CONFIRMATION -> new DeliveryMessageAction(session, messageStatusService, sessionRegistry);
+         case MessageConstans.MESSAGE_STATUS -> new MessageStatusAction(session, messageStatusService, sessionRegistry);
          case MessageConstans.PING -> new PingActionService(session, sessionRegistry);
          case MessageConstans.MESSAGE, MessageConstans.IMAGE -> new MediaMessageAction(session, conversationService, messageService, sessionRegistry);
          default -> null;

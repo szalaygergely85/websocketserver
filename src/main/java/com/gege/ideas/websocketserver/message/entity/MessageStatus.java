@@ -1,33 +1,29 @@
-package com.gege.ideas.websocketserver.message.entity;
+package com.gege.ideas.websocketserver.message.entity;v
 
 import com.gege.ideas.websocketserver.message.constans.MessageConstans;
 import com.gege.ideas.websocketserver.message.service.MessageStatusType;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MessageStatus implements Serializable {
 
    private Long messageStatusId;
-   private String uuid;
-   private Long userId;
-   private MessageStatusType messageStatusType;
-   private boolean delivered = false;
 
+   private String uuid;
+   private Map<Long, MessageStatusType> userStatuses = new HashMap<>();
+   private Map<Long, Boolean> deliveredStatuses = new HashMap<>();
    private final int type = MessageConstans.MESSAGE_STATUS;
 
-   public MessageStatus(Long messageStatusId, String uuid, Long userId, MessageStatusType messageStatusType, boolean delivered) {
+   public MessageStatus(Long messageStatusId, String uuid, Map<Long, MessageStatusType> userStatuses, Map<Long, Boolean> deliveredStatuses) {
       this.messageStatusId = messageStatusId;
       this.uuid = uuid;
-      this.userId = userId;
-      this.messageStatusType = messageStatusType;
-      this.delivered = delivered;
+      this.userStatuses = userStatuses;
+      this.deliveredStatuses = deliveredStatuses;
    }
 
-   public MessageStatus(String uuid, Long userId, MessageStatusType messageStatusType, boolean delivered) {
-      this.uuid = uuid;
-      this.userId = userId;
-      this.messageStatusType = messageStatusType;
-      this.delivered = delivered;
+   public MessageStatus() {
    }
 
    public Long getMessageStatusId() {
@@ -46,30 +42,23 @@ public class MessageStatus implements Serializable {
       this.uuid = uuid;
    }
 
-   public Long getUserId() {
-      return userId;
+   public Map<Long, MessageStatusType> getUserStatuses() {
+      return userStatuses;
    }
 
-   public void setUserId(Long userId) {
-      this.userId = userId;
+   public void setUserStatuses(Map<Long, MessageStatusType> userStatuses) {
+      this.userStatuses = userStatuses;
    }
 
-   public MessageStatusType getMessageStatusType() {
-      return messageStatusType;
+   public Map<Long, Boolean> getDeliveredStatuses() {
+      return deliveredStatuses;
    }
 
-   public void setMessageStatusType(MessageStatusType messageStatusType) {
-      this.messageStatusType = messageStatusType;
+   public void setDeliveredStatuses(Map<Long, Boolean> deliveredStatuses) {
+      this.deliveredStatuses = deliveredStatuses;
    }
 
-   public boolean isDelivered() {
-      return delivered;
-   }
-
-   public void setDelivered(boolean delivered) {
-      this.delivered = delivered;
-   }
-
-   public MessageStatus() {
+   public int getType() {
+      return type;
    }
 }
