@@ -61,9 +61,7 @@ public class MessageStatusAction extends ActionService {
         messageStatusService.markMessageAsRead(uuid, authToken);
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(
-            MessageStatusAction.class
-    );
+
     private final MessageStatusService messageStatusService;
 
 

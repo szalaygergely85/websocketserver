@@ -11,6 +11,8 @@ public class MessageConstans {
 
    public static final int MESSAGE_STATUS = 5;
 
+   public static final int MESSAGE_STATUS_UPDATE = 6;
+
 
    public static final int ERROR = 0;
 

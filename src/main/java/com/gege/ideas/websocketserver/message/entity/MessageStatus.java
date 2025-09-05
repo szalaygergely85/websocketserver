@@ -1,4 +1,4 @@
-package com.gege.ideas.websocketserver.message.entity;v
+package com.gege.ideas.websocketserver.message.entity;
 
 import com.gege.ideas.websocketserver.message.constans.MessageConstans;
 import com.gege.ideas.websocketserver.message.service.MessageStatusType;
