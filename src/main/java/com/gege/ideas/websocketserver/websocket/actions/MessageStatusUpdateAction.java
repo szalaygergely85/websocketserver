@@ -53,7 +53,10 @@ public class MessageStatusUpdateAction extends ActionService {
       );
       for (ConversationParticipant conversationParticipant : conversationDTO.getParticipants()) {
          if (!userId.equals(conversationParticipant.getUserId())) {
-            sendMessageToUser(JsonUtil.mapToJsonString(message), userId);
+            sendMessageToUser(
+               JsonUtil.mapToJsonString(message),
+               conversationParticipant.getUserId()
+            );
          }
       }
       if (messageStatusType.equals(MessageStatusType.DELIVERED)) {
