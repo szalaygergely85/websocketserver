@@ -1,6 +1,5 @@
 package com.gege.ideas.websocketserver.message.api;
 
-import com.gege.ideas.websocketserver.DTO.MessageDTO;
 import com.gege.ideas.websocketserver.auth.SystemAuthTokenProvider;
 import com.gege.ideas.websocketserver.config.ApiProperties;
 import com.gege.ideas.websocketserver.message.entity.Message;

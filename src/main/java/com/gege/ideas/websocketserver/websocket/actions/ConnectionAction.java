@@ -10,38 +10,32 @@ import com.gege.ideas.websocketserver.user.service.UserService;
 import com.gege.ideas.websocketserver.websocket.SessionRegistry;
 import java.io.IOException;
 import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
-
-public class ConnectionAction extends ActionService{
+public class ConnectionAction extends ActionService {
 
    private UserService userService;
    private MessageService messageService;
    private MessageStatusService messageStatusService;
 
-
-   public ConnectionAction(WebSocketSession session, SessionRegistry sessionRegistry, UserService userService, MessageService messageService, MessageStatusService messageStatusService) throws IOException {
+   public ConnectionAction(
+      WebSocketSession session,
+      SessionRegistry sessionRegistry,
+      UserService userService,
+      MessageService messageService,
+      MessageStatusService messageStatusService
+   ) throws IOException {
       super(session, sessionRegistry);
-
       this.userService = userService;
       this.messageService = messageService;
       this.messageStatusService = messageStatusService;
    }
 
    @Override
-   public void handleMessage(JsonNode jsonNode) throws Exception {
+   public void handleMessage(JsonNode jsonNode) throws Exception {}
 
-   }
-
-   public Long registerUser(
-   ) throws IOException {
+   public Long registerUser() throws IOException {
       Long userId = _getUserIdFromSession();
       if (userId != null) {
          sessionRegistry.registerSession(userId.toString(), session);
@@ -63,20 +57,26 @@ public class ConnectionAction extends ActionService{
 
    private void _getNotDeliveredMessages(Long userId) throws IOException {
       if (userId != null) {
-         List<Message> messageList = messageService.getNotDeliveredMessages(authToken);
-         logger.info(userId + " not delivered Message count: " + messageList.size());
+         List<Message> messageList = messageService.getNotDeliveredMessages(
+            authToken
+         );
+         logger.info(
+            userId + " not delivered Message count: " + messageList.size()
+         );
          sendMessagesToSession(messageList, session);
-         List<MessageStatus> messageStatusList = messageStatusService.getNotDeliveredMessages(authToken);
-         logger.info(userId + " not delivered Message Status count: " + messageStatusList.size());
-
+         List<MessageStatus> messageStatusList =
+            messageStatusService.getNotDeliveredMessages(authToken);
+         logger.info(
+            userId +
+            " not delivered Message Status count: " +
+            messageStatusList.size()
+         );
       } else {
          session.close();
       }
    }
 
-
-   private Long _getUserIdFromSession()
-      throws IOException {
+   private Long _getUserIdFromSession() throws IOException {
       String token = getAuthToken();
 
       return userService.getUserIdByToken(token);

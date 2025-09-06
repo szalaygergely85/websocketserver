@@ -2,8 +2,8 @@ package com.gege.ideas.websocketserver.message.api;
 
 import com.gege.ideas.websocketserver.auth.SystemAuthTokenProvider;
 import com.gege.ideas.websocketserver.config.ApiProperties;
-import com.gege.ideas.websocketserver.message.entity.Message;
 import com.gege.ideas.websocketserver.message.entity.MessageStatus;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
@@ -11,8 +11,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.List;
 
 @Component
 public class MessageStatusApiClient {
@@ -41,7 +39,7 @@ public class MessageStatusApiClient {
       headers.set("Authorization", authToken);
       try {
          HttpEntity<MessageStatus> request = new HttpEntity<>(
-                 messageStatus,
+            messageStatus,
             headers
          );
 
@@ -94,23 +92,22 @@ public class MessageStatusApiClient {
       HttpEntity<Void> request = new HttpEntity<>(headers);
       try {
          ResponseEntity<Void> response = restTemplate.exchange(
-                 baseUrl + "/" + uuid + "/read",
-                 HttpMethod.POST,
-                 request,
-                 Void.class
+            baseUrl + "/" + uuid + "/read",
+            HttpMethod.POST,
+            request,
+            Void.class
          );
       } catch (HttpClientErrorException | HttpServerErrorException ex) {
          System.err.println(
-                 "Error: " +
-                         ex.getStatusCode() +
-                         " - " +
-                         ex.getResponseBodyAsString()
+            "Error: " +
+            ex.getStatusCode() +
+            " - " +
+            ex.getResponseBodyAsString()
          );
          throw ex;
       }
       // Optional: handle response.getStatusCode() if needed
    }
-
 
    public List<MessageStatus> getNotDeliveredMessageStatus(String authToken) {
       HttpHeaders headers = new HttpHeaders();
@@ -121,19 +118,19 @@ public class MessageStatusApiClient {
          HttpEntity<Void> request = new HttpEntity<>(headers);
 
          ResponseEntity<List<MessageStatus>> response = restTemplate.exchange(
-                 baseUrl + "/get-messages-status/not-delivered",
-                 HttpMethod.GET,
-                 request,
-                 new ParameterizedTypeReference<List<MessageStatus>>() {}
+            baseUrl + "/get-messages-status/not-delivered",
+            HttpMethod.GET,
+            request,
+            new ParameterizedTypeReference<List<MessageStatus>>() {}
          );
 
          return response.getBody();
       } catch (HttpClientErrorException | HttpServerErrorException ex) {
          System.err.println(
-                 "Error: " +
-                         ex.getStatusCode() +
-                         " - " +
-                         ex.getResponseBodyAsString()
+            "Error: " +
+            ex.getStatusCode() +
+            " - " +
+            ex.getResponseBodyAsString()
          );
          throw ex;
       }

@@ -2,7 +2,6 @@ package com.gege.ideas.websocketserver.message.entity;
 
 import com.gege.ideas.websocketserver.message.constans.MessageConstans;
 import com.gege.ideas.websocketserver.message.service.MessageStatusType;
-
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,15 +15,19 @@ public class MessageStatus implements Serializable {
    private Map<Long, Boolean> deliveredStatuses = new HashMap<>();
    private final int type = MessageConstans.MESSAGE_STATUS;
 
-   public MessageStatus(Long messageStatusId, String uuid, Map<Long, MessageStatusType> userStatuses, Map<Long, Boolean> deliveredStatuses) {
+   public MessageStatus(
+      Long messageStatusId,
+      String uuid,
+      Map<Long, MessageStatusType> userStatuses,
+      Map<Long, Boolean> deliveredStatuses
+   ) {
       this.messageStatusId = messageStatusId;
       this.uuid = uuid;
       this.userStatuses = userStatuses;
       this.deliveredStatuses = deliveredStatuses;
    }
 
-   public MessageStatus() {
-   }
+   public MessageStatus() {}
 
    public Long getMessageStatusId() {
       return messageStatusId;

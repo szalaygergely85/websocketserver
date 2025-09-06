@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gege.ideas.websocketserver.message.entity.Message;
-
 import java.util.Map;
 
 public class JsonUtil {
@@ -40,20 +39,36 @@ public class JsonUtil {
    public static Message jsonToMessage(JsonNode jsonNode) {
       try {
          Long conversationId = jsonNode.hasNonNull("conversationId")
-                 ? jsonNode.get("conversationId").asLong() : null;
+            ? jsonNode.get("conversationId").asLong()
+            : null;
          Long senderId = jsonNode.hasNonNull("userId")
-                 ? jsonNode.get("userId").asLong() : null;
+            ? jsonNode.get("userId").asLong()
+            : null;
          Long timestamp = jsonNode.hasNonNull("timestamp")
-                 ? jsonNode.get("timestamp").asLong() : null;
+            ? jsonNode.get("timestamp").asLong()
+            : null;
          String content = jsonNode.hasNonNull("content")
-                 ? jsonNode.get("content").asText() : null;
-         boolean encrypted = jsonNode.has("encrypted") && jsonNode.get("encrypted").asBoolean(false);
+            ? jsonNode.get("content").asText()
+            : null;
+         boolean encrypted =
+            jsonNode.has("encrypted") &&
+            jsonNode.get("encrypted").asBoolean(false);
          int mType = jsonNode.hasNonNull("type")
-                 ? jsonNode.get("type").asInt() : 0;
+            ? jsonNode.get("type").asInt()
+            : 0;
          String uuid = jsonNode.hasNonNull("uuid")
-                 ? jsonNode.get("uuid").asText() : null;
+            ? jsonNode.get("uuid").asText()
+            : null;
 
-         return new Message(conversationId, senderId, timestamp, content, encrypted, mType, uuid);
+         return new Message(
+            conversationId,
+            senderId,
+            timestamp,
+            content,
+            encrypted,
+            mType,
+            uuid
+         );
       } catch (Exception e) {
          // Optional: log the error instead of printing stack trace
          e.printStackTrace();

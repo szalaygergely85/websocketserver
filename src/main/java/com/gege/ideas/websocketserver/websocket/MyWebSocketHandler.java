@@ -8,7 +8,6 @@ import com.gege.ideas.websocketserver.message.service.MessageService;
 import com.gege.ideas.websocketserver.message.service.MessageStatusService;
 import com.gege.ideas.websocketserver.user.service.UserService;
 import com.gege.ideas.websocketserver.websocket.actions.*;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,35 +20,58 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
    @Override
    public void handleTextMessage(WebSocketSession session, TextMessage message)
       throws Exception {
-
       String payload = message.getPayload();
-      logger.info("Payload arrived "+ payload);
+      logger.info("Payload arrived " + payload);
       ObjectMapper objectMapper = new ObjectMapper();
       JsonNode jsonNode = objectMapper.readTree(payload);
 
       int type = jsonNode.get("type").asInt();
 
-      ActionService service = switch (type) {
-
-         case MessageConstans.MESSAGE_STATUS -> new MessageStatusAction(session, messageStatusService, sessionRegistry);
-         case MessageConstans.MESSAGE_STATUS_UPDATE -> new MessageStatusUpdateAction(session, sessionRegistry, messageStatusService, conversationService);
-         case MessageConstans.PING -> new PingActionService(session, sessionRegistry);
-         case MessageConstans.MESSAGE, MessageConstans.IMAGE -> new MediaMessageAction(session, conversationService, messageService, sessionRegistry);
-         default -> null;
-      };
+      ActionService service =
+         switch (type) {
+            case MessageConstans.MESSAGE_STATUS -> new MessageStatusAction(
+               session,
+               messageStatusService,
+               sessionRegistry
+            );
+            case MessageConstans.MESSAGE_STATUS_UPDATE -> new MessageStatusUpdateAction(
+               session,
+               sessionRegistry,
+               messageStatusService,
+               conversationService
+            );
+            case MessageConstans.PING -> new PingActionService(
+               session,
+               sessionRegistry
+            );
+            case MessageConstans.MESSAGE,
+               MessageConstans.IMAGE -> new MediaMessageAction(
+               session,
+               conversationService,
+               messageService,
+               sessionRegistry
+            );
+            default -> null;
+         };
 
       if (service != null) {
          service.handleMessage(jsonNode);
       }
    }
+
    @Override
    public void afterConnectionEstablished(WebSocketSession session)
       throws Exception {
       super.afterConnectionEstablished(session);
 
-      ConnectionAction connectionAction = new ConnectionAction(session, sessionRegistry, userService, messageService, messageStatusService);
-       connectionAction.registerUser();
-
+      ConnectionAction connectionAction = new ConnectionAction(
+         session,
+         sessionRegistry,
+         userService,
+         messageService,
+         messageStatusService
+      );
+      connectionAction.registerUser();
    }
 
    private static final Logger logger = LoggerFactory.getLogger(
@@ -71,8 +93,4 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
 
    @Autowired
    private MessageAction messageAction;
-
-
-
-
 }
