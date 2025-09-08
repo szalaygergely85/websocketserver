@@ -59,7 +59,7 @@ public class MessageStatusUpdateAction extends ActionService {
             );
          }
       }
-      if (messageStatusType.equals(MessageStatusType.DELIVERED)) {
+      if (messageStatusType.equals(MessageStatusType.DELIVERED.name())) {
          messageStatusService.markMessageAsDelivered(uuid, authToken);
       } else {
          messageStatusService.markMessageAsRead(uuid, authToken);

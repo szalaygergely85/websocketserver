@@ -126,8 +126,4 @@ public class MessageApiClient {
          throw ex;
       }
    }
-
-   public void delete(Message message, String authToken) {
-      //TODO create delete
-   }
 }

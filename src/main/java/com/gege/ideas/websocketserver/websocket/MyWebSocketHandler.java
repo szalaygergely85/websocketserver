@@ -90,7 +90,4 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
 
    @Autowired
    private UserService userService;
-
-   @Autowired
-   private MessageAction messageAction;
 }

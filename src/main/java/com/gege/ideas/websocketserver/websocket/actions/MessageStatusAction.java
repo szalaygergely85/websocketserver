@@ -57,8 +57,6 @@ public class MessageStatusAction extends ActionService {
             sendMessageToUser(JsonUtil.mapToJsonString(message), userId);
          }
       }
-
-      messageStatusService.markMessageAsRead(uuid, authToken);
    }
 
    private final MessageStatusService messageStatusService;
