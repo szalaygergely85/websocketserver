@@ -60,6 +60,10 @@ public class JsonUtil {
             ? jsonNode.get("uuid").asText()
             : null;
 
+         Long conversationOrderId = jsonNode.hasNonNull("conversationOrderId")
+            ? jsonNode.get("conversationOrderId").asLong()
+            : null;
+
          return new Message(
             conversationId,
             senderId,
@@ -67,7 +71,8 @@ public class JsonUtil {
             content,
             encrypted,
             mType,
-            uuid
+            uuid,
+            conversationOrderId
          );
       } catch (Exception e) {
          // Optional: log the error instead of printing stack trace

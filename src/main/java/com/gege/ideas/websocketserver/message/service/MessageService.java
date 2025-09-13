@@ -34,10 +34,6 @@ public class MessageService {
       this.conversationService = conversationService;
    }
 
-   public void deleteMessage(Message message, String token) {
-      messageApiClient.delete(message, token);
-   }
-
    public Message getMessageByUuid(String uuid, String token) {
       return messageApiClient.getMessage(uuid, token);
    }
