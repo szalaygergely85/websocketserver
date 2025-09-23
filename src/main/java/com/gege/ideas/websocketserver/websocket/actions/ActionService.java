@@ -100,8 +100,8 @@ public abstract class ActionService {
       WebSocketSession session
    ) throws IOException {
       for (MessageStatus message : messageList) {
+         String messageJson = JsonUtil.objectToJson(message);
          try {
-            String messageJson = JsonUtil.objectToJson(message);
             sendMessageToSession(messageJson);
          } catch (IOException e) {
             // Log the error or handle it appropriately

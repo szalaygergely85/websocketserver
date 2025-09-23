@@ -71,6 +71,7 @@ public class ConnectionAction extends ActionService {
             " not delivered Message Status count: " +
             messageStatusList.size()
          );
+         sendMessagesStatusesToSession(messageStatusList, session);
       } else {
          session.close();
       }
