@@ -38,7 +38,6 @@ public class MessageStatusService {
       messageStatusApiClient.markStatusAsDelivered(uuid, token);
    }
 
-
    public List<MessageStatus> getNotDeliveredMessages(String token) {
       return messageStatusApiClient.getNotDeliveredMessageStatus(token);
    }

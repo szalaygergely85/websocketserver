@@ -116,17 +116,17 @@ public class MessageStatusApiClient {
       HttpEntity<Void> request = new HttpEntity<>(headers);
       try {
          ResponseEntity<Void> response = restTemplate.exchange(
-                 baseUrl + "/" + uuid + "/status-delivered",
-                 HttpMethod.POST,
-                 request,
-                 Void.class
+            baseUrl + "/" + uuid + "/status-delivered",
+            HttpMethod.POST,
+            request,
+            Void.class
          );
       } catch (HttpClientErrorException | HttpServerErrorException ex) {
          System.err.println(
-                 "Error: " +
-                         ex.getStatusCode() +
-                         " - " +
-                         ex.getResponseBodyAsString()
+            "Error: " +
+            ex.getStatusCode() +
+            " - " +
+            ex.getResponseBodyAsString()
          );
          throw ex;
       }
