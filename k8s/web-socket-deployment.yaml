@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-socket
+  namespace: default
+  labels:
+    app: web-socket
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web-socket
+  template:
+    metadata:
+      name: web-socket
+      labels:
+        app: web-socket
+    spec:
+      containers:
+        - name: web-socket
+          image: gery12492/rest-server:latest
+          ports:
+            - containerPort: 8081
+      restartPolicy: Always
+      

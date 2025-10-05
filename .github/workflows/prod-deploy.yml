@@ -45,20 +45,20 @@ jobs:
           docker buildx create --use
           docker buildx build --no-cache --platform linux/arm/v7,linux/amd64  -t gery12492/web-socket:1.0.0 --push .
 
-      - name: Confirm Docker image push
-        run: docker images
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'latest'
 
-      - name: Install sshpass
-        run: sudo apt-get update && sudo apt-get install -y sshpass
-
-      - name: Deploy to Raspberry Pi
+      # 9️⃣ Configure kubeconfig from GitHub Secret
+      - name: Configure kubeconfig
         run: |
-          sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no pi@pingnest.ddns.net << 'EOF'
-          docker stop websocket-app || true
-          docker rm websocket-app || true
-          docker rmi gery12492/web-socket:1.0.0
-          docker pull gery12492/web-socket:1.0.0
-          docker run -d --name websocket-app --network my-network -p 8081:8081 gery12492/web-socket:1.0.0
-          EOF
-        env:
-          SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
+          mkdir -p $HOME/.kube
+          printf "%s" "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
+
+      - name: Deploy WEB SOCKET to k3s
+        run: |
+          # Update the deployment image
+          kubectl set image deployment/rest-server rest-server=gery12492/web-socket:latest
+          kubectl apply -f k8s/
+          kubectl rollout restart deployment/web-socket
