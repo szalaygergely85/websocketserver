@@ -32,6 +32,7 @@ public class NotificationApiClient {
       this.authTokenProvider = authTokenProvider;
    }
 
+   @Deprecated
    public void sendNotification(
       Map<String, String> data,
       String type,

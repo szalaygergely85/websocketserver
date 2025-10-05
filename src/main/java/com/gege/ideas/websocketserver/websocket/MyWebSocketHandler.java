@@ -40,6 +40,13 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
                messageStatusService,
                conversationService
             );
+
+             case MessageConstans.MESSAGE_STATUS_ARRIVED -> new MessageStatusArriveAction(
+                     session,
+                     sessionRegistry,
+                     messageStatusService
+             );
+
             case MessageConstans.PING -> new PingActionService(
                session,
                sessionRegistry

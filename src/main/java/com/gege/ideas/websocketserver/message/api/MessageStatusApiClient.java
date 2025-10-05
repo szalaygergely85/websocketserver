@@ -109,6 +109,30 @@ public class MessageStatusApiClient {
       // Optional: handle response.getStatusCode() if needed
    }
 
+   public void markStatusAsDelivered(String uuid, String authToken) {
+      HttpHeaders headers = new HttpHeaders();
+      headers.set("Authorization", authToken); // No need for Content-Type in GET
+
+      HttpEntity<Void> request = new HttpEntity<>(headers);
+      try {
+         ResponseEntity<Void> response = restTemplate.exchange(
+                 baseUrl + "/" + uuid + "/status-delivered",
+                 HttpMethod.POST,
+                 request,
+                 Void.class
+         );
+      } catch (HttpClientErrorException | HttpServerErrorException ex) {
+         System.err.println(
+                 "Error: " +
+                         ex.getStatusCode() +
+                         " - " +
+                         ex.getResponseBodyAsString()
+         );
+         throw ex;
+      }
+      // Optional: handle response.getStatusCode() if needed
+   }
+
    public List<MessageStatus> getNotDeliveredMessageStatus(String authToken) {
       HttpHeaders headers = new HttpHeaders();
       headers.setContentType(MediaType.APPLICATION_JSON);

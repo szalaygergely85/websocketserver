@@ -15,6 +15,7 @@ public class NotificationService {
       this.notificationApiClient = notificationApiClient;
    }
 
+   @Deprecated
    public void sendNotification(
       String content,
       String type,
