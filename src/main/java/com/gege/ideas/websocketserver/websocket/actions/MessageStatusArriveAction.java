@@ -20,7 +20,7 @@ public class MessageStatusArriveAction extends ActionService {
    @Override
    public void handleMessage(JsonNode jsonNode) throws Exception {
       String uuid = jsonNode.has("uuid") ? jsonNode.get("uuid").asText() : null;
-      messageStatusService.markMessageAsDelivered(uuid, authToken);
+      messageStatusService.markStatusAsDelivered(uuid, authToken);
    }
 
    private final MessageStatusService messageStatusService;
