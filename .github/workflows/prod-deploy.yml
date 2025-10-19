@@ -59,6 +59,6 @@ jobs:
       - name: Deploy WEB SOCKET to k3s
         run: |
           # Update the deployment image
-          kubectl set image deployment/web-socket rest-server=gery12492/web-socket:latest
+          kubectl set image deployment/web-socket web-socket=gery12492/web-socket:latest
           kubectl apply -f k8s/
           kubectl rollout restart deployment/web-socket
