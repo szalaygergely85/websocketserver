@@ -44,11 +44,11 @@ public class ConnectionAction extends ActionService {
          return userId;
       } else {
          String errorMessage =
-            "{\"type\": \" " +
+            "{\"type\":" +
             MessageConstans.ERROR +
-            "\", \"error_type\": \" " +
+            ",\"error_type\":" +
             MessageConstans.ERROR_USER_NOT_FOUND +
-            " \" }";
+            "}";
          session.sendMessage(new TextMessage(errorMessage));
          session.close();
          return null;

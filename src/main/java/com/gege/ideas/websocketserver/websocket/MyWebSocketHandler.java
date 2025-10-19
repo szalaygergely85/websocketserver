@@ -8,6 +8,7 @@ import com.gege.ideas.websocketserver.message.service.MessageService;
 import com.gege.ideas.websocketserver.message.service.MessageStatusService;
 import com.gege.ideas.websocketserver.user.service.UserService;
 import com.gege.ideas.websocketserver.websocket.actions.*;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,6 +78,30 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
          messageStatusService
       );
       connectionAction.registerUser();
+   }
+
+   @Override
+   public void afterConnectionClosed(
+      WebSocketSession session,
+      org.springframework.web.socket.CloseStatus status
+   ) throws Exception {
+      super.afterConnectionClosed(session, status);
+
+      // Remove session from registry to prevent memory leak
+      String userId = null;
+      for (Map.Entry<String, WebSocketSession> entry : sessionRegistry
+         .getAllSessions()
+         .entrySet()) {
+         if (entry.getValue().getId().equals(session.getId())) {
+            userId = entry.getKey();
+            break;
+         }
+      }
+
+      if (userId != null) {
+         sessionRegistry.removeSession(userId);
+         logger.info("User {} disconnected and session removed", userId);
+      }
    }
 
    private static final Logger logger = LoggerFactory.getLogger(

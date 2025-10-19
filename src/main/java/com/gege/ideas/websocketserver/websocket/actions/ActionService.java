@@ -65,11 +65,11 @@ public abstract class ActionService {
 
       if (token == null) {
          String errorMessage =
-            "{\"type\": \" " +
+            "{\"type\":" +
             MessageConstans.ERROR +
-            "\", \"error_type\": \" " +
+            ",\"error_type\":" +
             MessageConstans.ERROR_MISSING_AUTH_TOKEN +
-            " \" }";
+            "}";
 
          sendMessageToSession(errorMessage);
          logger.error("Token is missing in the headers.");

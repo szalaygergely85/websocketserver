@@ -9,9 +9,12 @@ public class MessageDTO {
 
    private MessageStatus status;
 
+   private long timestamp;
+
    public MessageDTO(Message message, MessageStatus status) {
       this.message = message;
       this.status = status;
+      this.timestamp = System.currentTimeMillis();
    }
 
    public MessageDTO() {}
@@ -30,5 +33,13 @@ public class MessageDTO {
 
    public void setStatus(MessageStatus status) {
       this.status = status;
+   }
+
+   public long getTimestamp() {
+      return timestamp;
+   }
+
+   public void setTimestamp(long timestamp) {
+      this.timestamp = timestamp;
    }
 }
