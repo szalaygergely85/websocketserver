@@ -36,6 +36,13 @@ public class SystemAuthTokenProvider {
    public void loginAtStartup() {
       String loginURL = apiProperties.getBaseUrl() + "/user/login";
 
+      System.out.println("🔍 Attempting login to: " + loginURL);
+      System.out.println("🔍 Using email: " + systemEmail);
+      System.out.println(
+         "🔍 Password length: " +
+         (systemPassword != null ? systemPassword.length() : "null")
+      );
+
       LoginRequest loginRequest = new LoginRequest(systemEmail, systemPassword);
 
       HttpHeaders headers = new HttpHeaders();
