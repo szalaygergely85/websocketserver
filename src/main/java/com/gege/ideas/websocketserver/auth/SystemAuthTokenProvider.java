@@ -4,6 +4,7 @@ import com.gege.ideas.websocketserver.DTO.LoginRequest;
 import com.gege.ideas.websocketserver.config.ApiProperties;
 import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
@@ -14,8 +15,11 @@ public class SystemAuthTokenProvider {
    private final RestTemplate restTemplate;
    private String authToken;
 
-   private static final String SYSTEM_EMAIL = "websocket@zenvy.com";
-   private static final String SYSTEM_PASSWORD = "123456";
+   @Value("${system.user.email}")
+   private String systemEmail;
+
+   @Value("${system.user.password}")
+   private String systemPassword;
 
    private final ApiProperties apiProperties;
 
@@ -32,10 +36,7 @@ public class SystemAuthTokenProvider {
    public void loginAtStartup() {
       String loginURL = apiProperties.getBaseUrl() + "/user/login";
 
-      LoginRequest loginRequest = new LoginRequest(
-         SYSTEM_EMAIL,
-         SYSTEM_PASSWORD
-      );
+      LoginRequest loginRequest = new LoginRequest(systemEmail, systemPassword);
 
       HttpHeaders headers = new HttpHeaders();
       headers.setContentType(MediaType.APPLICATION_JSON);
