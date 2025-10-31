@@ -21,10 +21,5 @@ spec:
           image: gery12492/web-socket:1.0.0
           ports:
             - containerPort: 8081
-          env:
-            - name: SYSTEM_USER_EMAIL
-              value: ""
-            - name: SYSTEM_USER_PASSWORD
-              value: ""
       restartPolicy: Always
       
