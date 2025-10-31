@@ -60,5 +60,7 @@ jobs:
         run: |
           # Update the deployment image
           kubectl set image deployment/web-socket web-socket=gery12492/web-socket:latest
+          # Set environment variables
+          kubectl set env deployment/web-socket SYSTEM_USER_EMAIL="${{ secrets.SYSTEM_USER_EMAIL }}" SYSTEM_USER_PASSWORD="${{ secrets.SYSTEM_USER_PASSWORD }}"
           kubectl apply -f k8s/
           kubectl rollout restart deployment/web-socket

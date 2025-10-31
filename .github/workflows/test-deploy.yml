@@ -58,7 +58,10 @@ jobs:
           docker rm websocket-app || true
           docker rmi gery12492/web-socket:1.0.0
           docker pull gery12492/web-socket:1.0.0
-          docker run -d --name websocket-app --network my-network -p 8081:8081 gery12492/web-socket:1.0.0
+          docker run -d --name websocket-app --network my-network -p 8081:8081 \
+            -e SYSTEM_USER_EMAIL="${{ secrets.SYSTEM_USER_EMAIL }}" \
+            -e SYSTEM_USER_PASSWORD="${{ secrets.SYSTEM_USER_PASSWORD }}" \
+            gery12492/web-socket:1.0.0
           EOF
         env:
           SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
